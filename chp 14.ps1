@@ -41,3 +41,36 @@ Get-WmiObject win32_logicaldisk -filter “drivetype=3”
 
 #Get-wmiobject supports -credential parameter (CIM does not, you need to use invoke command)
 Get-WmiObject win32_logicaldisk -Filter "drivetype=3" -ComputerName m410-23 -Credential student
+
+#The following examples are based on the questions from chapter 14
+
+#Question #1
+#https://mcpmag.com/articles/2018/06/07/powershell-with-network-adapter.aspx
+(Get-WmiObject -Class Win32_NetworkAdapterConfiguration).Where{$_.IPAddress}
+
+#So this looks more like what we have done in the book so far.
+Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object {$_.IPAddress -ne $null}
+Get-CimInstance -ClassName win32_NetworkAdapterConfiguration  | foreach {"IP Address: $($_.IPAddress) `t`t`t`t`t NIC Index:$($_.Index)"}
+Get-CimInstance -ClassName win32_NetworkAdapterConfiguration  | where-Object {$_.IPAddress -ne $null} | foreach {"IP Address: $($_.IPAddress) `t`t`t`t`t NIC Index:$($_.Index)"}
+Get-CimClass win32_NetworkAdapterConfiguration | fl
+
+#Question #2
+gwmi -Class win32_bios | FT @{l='ComputerName';e={$_.__Server}}
+gwmi -Class win32_bios | FT manufacturer
+(gwmi -Class win32_operatingsystem).BuildNumber
+
+Get-CimInstance Win32_OperatingSystem | select BuildNumber, caption, @{l='ComputerName';e={$_.CSNAME}}
+Get-CimInstance Win32_OperatingSystem | select BuildNumber, caption, CSNAME, @{l='BIOSSerialNumber';e={(Get-CimInstance win32_bios).SerialNumber }}|ft -AutoSize
+
+#Invoke coommand can be used to get info from a remote machine
+Invoke-Command -ComputerName server2016-2{
+Get-CimInstance Win32_OperatingSystem | select BuildNumber, caption, CSNAME, @{l='BIOSSerialNumber';e={(Get-CimInstance win32_bios).SerialNumber }}|ft -AutoSize
+}
+
+#Question #4
+Get-CimInstance Win32_Service | Select-Object Name,State,StartMode,StartName | select -First 15
+
+#Invoke coommand can be used to get info from a remote machine
+Invoke-Command -ComputerName server2016-2{
+Get-CimInstance Win32_Service | Select-Object name,state,startmode,startname
+}
