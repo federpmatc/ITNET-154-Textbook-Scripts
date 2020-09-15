@@ -13,3 +13,4 @@ Get-Service |select -First 5| fl * #make the columns wide enough to display valu
 Get-Service | fw  -Column 5 #format wide displays a single property
 
 Get-Service | Out-GridView -Title Services #you don't specify properties of the object to display
+#####
