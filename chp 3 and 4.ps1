@@ -1,4 +1,4 @@
-﻿#Chapter 3
+#Chapter 3
 
 #The first time you try to get help..nothing
 get-help get-service -Examples
@@ -18,29 +18,31 @@ help Get-Disk -Examples
 #I prefer just googling powershell get-service
 #help & get-help are basically the same, help is a function that pipes the output of get-help to more
 
-help *service #talk about wild cards
+help service* #talk about wild cards
 
 help Get-EventLog -Full
 
 # We see that Get-Eventlog actually outputs 2 different types of info.
 Get-EventLog -AsString #-AsString is a switch.
-Get-EventLog -logname system
+Get-EventLog -logname system 
 Get-EventLog  system #-logname is a positional parameter
 
-Get-EventLog system -Newest 20 -InstanceId 20003 #-newest is an optional paramter
+Get-EventLog -logname system -Newest 20 -InstanceId 20003 #-newest is an optional paramter
 
 #The following requires that Remote Registry service be started on M410-Boss & Firewall off & PowerShell run as admin
 #get-service RemoteRegistry | Start-Service
 
 #OK Class retrieve the 5 newest entries from the System Log on M410-Boss
+#OK Class from W10-Client, get the eventlog from our domain controller (could be done in Netlab)
 
 #region 
-Get-EventLog -ComputerName m410-Boss -LogName System -Newest 5
+Get-EventLog -ComputerName  -LogName System -Newest 5
+Get-EventLog -ComputerName Server2016-1 -LogName System -Newest 5
 #endregion 
 
 
 New-Item -path "c:\servers.txt"  -ItemType file # -Value "Server2016-1`r`nServer2016-2`r`nLocalhost"
-add-content -Path "c:\servers.txt" -Value "Server2016-1","Server2016-2", "localhost"
+add-content -Path "c:\servers.txt" -Value "Server2016-1","Server2016-2", "W10-Client"
 get-content C:\servers.txt
 notepad C:\servers.txt 
 
@@ -52,7 +54,8 @@ New-NetFirewallRule -DisplayName Open445 -Direction Inbound -Action Allow -Proto
 #Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 
 Get-EventLog -LogName System -ComputerName server2016-2 -Newest 3
-Get-EventLog -LogName System -ComputerName (Get-Content C:\servers.txt) -Newest 3
+Get-EventLog -LogName System -ComputerName server2016-2,Server2016-1,W10-Client -Newest 3
+Get-EventLog -LogName System -ComputerName (Get-Content C:\servers.txt) -Newest 1
 
 #Chapter 4
 #####################################################################################
@@ -61,9 +64,6 @@ Get-EventLog -LogName System -ComputerName (Get-Content C:\servers.txt) -Newest 
 get-command get-se*
 get-command -verb get
 gcm -Noun service
-gcm -CommandType Function
-
-
 
 #4.3 cmdlet, function, application
 #cmdlet is a PowerShell Command
@@ -83,6 +83,7 @@ Function Get-NewFiles
 {
  $Start = (Get-Date).AddMonths(-1)
  $files = get-childitem -Path c:\*.* 
+ get-childitem -Path c:\*.* | Where-Object LastWriteTime -gt $Start
  $files | Where-Object LastWriteTime -gt $Start
 }
 
@@ -109,7 +110,3 @@ New-Item c:\pat -ItemType directory
 Copy-Item C:\Windows\ADWS\* -Destination C:\pat -Recurse
 Get-ChildItem c:\pat -Recurse
 #endregion
-
-
-
-
