@@ -1,6 +1,8 @@
-﻿Get-date
-Get-date | select *
-Get-date | gm
+Get-date
+Get-date | Out-GridView
+Get-date | Get-Member
+Get-ADUser -Filter * | gm
+
 
 #we see that this object contains ScriptProperty, Property, NoteProperty, method.  
 
@@ -9,10 +11,9 @@ Get-date | gm
 
 $gdate = get-date 
 $gdate | gm
-
-
 $gdate.AddMonths(-1)
-(get-date).AddDays(33)  #use the method to add 33 days
+
+(get-date).AddDays(-33)  #use the method to add 33 days
 
 #You rarely will execute a method directly
 notepad
@@ -24,29 +25,30 @@ get-process -Name Notepad* | Stop-Process
 
 #82
 #Sort
-get-process | Sort-Object -property VM  #(-property is a positional parameter), there’s also a -descending parameter
+get-process | Sort-Object -property CPU  #(-property is a positional parameter), there’s also a -descending parameter
 get-process | Sort-Object processname, ID #Sort by process name and then in case of a tie ID
 
 #83
 #select-object ... this selects the columns
-get-process | Sort-Object processname, ID | Select-Object -First 5 
+get-process | Sort-Object processname, ID | Select-Object -first 5 
 get-process | Sort-Object processname, ID | Select-Object ID, ProcessName,VM 
 get-process | Sort-Object processname, ID | Select-Object ID, ProcessName,VM | ConvertTo-Html | Out-File "c:\pat.html"
 get-process | Sort-Object processname, ID | Select-Object ID, ProcessName,VM | export-csv "c:\pat.csv"
 get-process | Sort-Object processname, ID | Select-Object ID, ProcessName,VM | Out-GridView
 
-Get-ADUser -Filter * -SearchBase "OU=Employees,DC=ad,DC=PEF4DRubrik,DC=com" | Sort-Object name -de
+Get-ADOrganizationalUnit -Filter * | Select-Object distinguishedname
+Get-ADUser -Filter * -SearchBase "OU=IT Network Specialist,DC=ITNET-112,DC=pri" | Sort-Object name -Descending 
 
 get-date | Out-GridView
 get-date | Select-Object dayofweek
 
 #Where-Object ... this selects the rows
 get-process |gm
-get-process | Where-Object CPU -gt .5
+get-process | Where-Object CPU -gt 10
 
 ###########################Discuss
 #Which one of these does not make sense?
-Get-Process | ConvertTo-HTML 
+Get-Process | ConvertTo-HTML | out-file process.html
 Get-Process | Select-Object -Property Name | Sort-Object -Property Name -descending
 Get-Process | Sort-Object -Property Name | Select-Object -Property Name
 Get-Process | Select-Object Name,Id | Sort-Object VM -descending
@@ -57,7 +59,10 @@ $env:USERPROFILE
 $myprofile = $env:USERPROFILE
 Get-ChildItem $myprofile 
 
-Get-ChildItem $myprofile
+Get-ChildItem |gm
+
+
+Get-ChildItem $myprofile -File -Recurse | Sort-Object LastWriteTime -Desce | Select-Object -First 2
 #Now modify the line above to accomplish the following
 #Return only files
 #Return only file (including those files found in sub-folders)
@@ -76,5 +81,3 @@ Get-ChildItem $myprofile
 
 #8.4
 #command from 8.2 to display day of the week and year
-
-
