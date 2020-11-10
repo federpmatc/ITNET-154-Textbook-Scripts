@@ -1,27 +1,32 @@
 #Variables
 #1.) Review Code Below
 
-#PowerShell variables are preceeded by a $get
+#PowerShell variables are preceeded by a $
 #Variables can contain objects .. which is anything
 $name = 'Server2016-1'
 
 #PowerShell provides access to environment variables through env: drive
+#Environment variables store information about the operating system environment.
 Get-ChildItem env:
-#You can retrieve a particular environment variable
+
+#You can retrieve a particular environment variable by $ env: <variable name>
 $env:COMPUTERNAME 
 
 $name = $env:COMPUTERNAME
 
-Get-Service -ComputerName $name  #You can use a environment
+Get-Service -ComputerName $name  #You can use an environment variable
 
-$name | gm
+$name | Get-Member
+$name.Length   #Property
+$name.ToUpper()  #Methods always have ()
 
 $services = Get-Service
 $services
+$services[0]
 $services[1]
 
 $val = 10
-$val | gm
+$val | Get-Member
 
 #'' vs ""
 $phrase = "the computer name is $name"
@@ -49,7 +54,7 @@ $phrase = "the computer `t name is`n `$$name "
 $phrase
 
 #array of objects
-$names = 'Server2012-1', 'Server2012-2', 'LocalHost'
+$names = 'Server2016-1', 'Server2016-2', 'LocalHost'
 $names
 
 $names[0]
@@ -76,8 +81,9 @@ $UpperNames = $names | ForEach-Object {$_.toUpper() }
 #https://community.spiceworks.com/topic/1463339-powershell-path-variables-with-spaces
 ForEach ($name in $names) 
 {
-md "C:\$name"
+New-Item -Path "C:\" -Name $Name -ItemType Directory
 }
+
 
 #Objects
 $services = Get-Service
@@ -86,11 +92,14 @@ $services.name #we can access the property of multiple objects
 #this is equivalent to
 Get-Service | Select-Object name  #recall select object selects properties
 
+#The Foreach statement (also known as a Foreach loop) 
+#is for stepping through (iterating) a series of values in a collection of items.
 ForEach ($service in $services) 
 {
 $service.name
 }
 
+#ForEach-Object accepts a collection of object as input and then iterates through them
 $services | ForEach-Object {$_.name}
 
 #variable types
