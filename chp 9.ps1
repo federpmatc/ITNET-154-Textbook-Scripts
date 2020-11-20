@@ -1,4 +1,4 @@
-﻿#PowerShell uses two methods to get the output of one command to another
+#PowerShell uses two methods to get the output of one command to another
 #ByValue - looks at output object type and checks if input command has parameters that accept this TYPE of object
 #ByPropertyname - Looks at output objects PROPERTIES and lines them up input object PARAMETERS
 
@@ -20,22 +20,41 @@ help get-service -full #-Name parameter is used to specify a service name
 
 #fix #1 - generate a string[] with computer names
 Get-Service -ComputerName ("Server2016-1","Server2016-2") 
-get-service -computername (get-content C:\computers.txt) | select status, name, displayname, MachineName | Sort-Object machinename, displayname | ft #-AutoSize
+get-service -computername (get-content C:\computers.txt) | select status, name, displayname, MachineName | Sort-Object machinename, displayname 
 
 #fix #2
 #Example - Converting Object Property to a string
-get-adcomputer -filter * -SearchBase "ou=domain controllers, dc=itnet-112, dc=pri"
-get-adcomputer -filter * -SearchBase "ou=domain controllers, dc=itnet-112, dc=pri" | select-object name | gm #this is not a string, required by get-service
-get-adcomputer -filter * -SearchBase "ou=domain controllers, dc=itnet-112, dc=pri" | select-object -expand name | gm #this is a string, required by get-service
 get-service -computername ( get-adcomputer -filter * -SearchBase "ou=domain controllers, dc=itnet-112, dc=pri" | select-object -expand name )
+
+
+#fix #3
+#skip...
+#https://powershell.org/forums/topic/piping-computers-to-get-service/
+$computers = get-adcomputer -filter * -SearchBase "ou=domain controllers, dc=itnet-112, dc=pri" | select  @{n='ComputerName';e={$_.name}}
+$computers | Get-Service -name *
+
+#get-hotfix does not accept input by Value
+Help Get-HotFix -Full
+$computers = get-adcomputer -filter * -SearchBase "ou=domain controllers,dc=itnet-112, dc=pri" | select  @{n='ComputerName';e={$_.name}}
+$computers | Get-HotFix
 
 #Another example, where 'By Value' works
 help Restart-Computer -Full #we see that the -computerName is by Value
 Clear-Content C:\computers.txt
 Add-Content -Path c:\computers.txt "Server2016-2"
+Add-Content -Path c:\computers.txt "W10-Client"
+
+#Restart
 get-content C:\computers.txt | Restart-Computer -Force
+Get-ADComputer -Filter * -SearchBase "OU=Servers,DC=ITNET-112,DC=pri" | Select-Object -ExpandProperty name | Restart-Computer
+
+#By property
+get-adcomputer -filter * -SearchBase "OU=Workstations, dc=itnet-112, dc=pri"
+get-adcomputer -filter * -SearchBase "OU=Workstations, dc=itnet-112, dc=pri" | Restart-Computer
+get-adcomputer -filter * -SearchBase "OU=Workstations, dc=itnet-112, dc=pri" |select  @{n='ComputerName';e={$_.name}} | Restart-Computer
 
 #Example - ByPropertyName
+new-alias -name 'PatFeder' -Value Get-Date
 New-Item c:\alias.csv -ItemType file
 Add-Content C:\alias.csv "Name, Value", "d, get-childitem", "sel, select-object"
 
@@ -43,9 +62,10 @@ help new-alias -full #note that new-alias accepts -Name ByPropertyName and -Valu
 import-csv C:\alias.csv
 import-csv C:\alias.csv | gm #We see that our object 
 import-csv C:\alias.csv | new-alias
-gal
+Get-Alias
 
 #This will work
+notepad.exe
 Get-process note* | stop-process
 
 #Here's why it works as ByValue.  We see the object types are the same
@@ -58,41 +78,26 @@ get-process -name spo* | stop-service
 get-process -name spo* | gm
 help stop-service -full
 
-#get-hotfix does not accept input by Value
-Help Get-HotFix -Full
-get-content C:\computers.txt | get-hotfix   #There are no parameters that accept and array of strings (by value)
+New-Item c:\newusers.csv -ItemType file -Force
+Add-Content C:\newusers.csv "login, dept, city, title", "MATC1, IT, Milwaukee, NoBody", "MATC2, IT, Milwaukee, SomeBody"
+notepad c:\newusers.csv
 
-#however we can use import-csv to create objects with any property name that we want
-Notepad C:\computers.csv
-#Comp_Name, Location
-#Server2016-1, M410
-#Server2016-2, M406
 
-#Modify computers.csv so the following works
-import-csv C:\computers.csv | gm #get-hotfix 
-
-#creating custom properties
-#notepad c:\newusers.csv
-#login, dept, city, title
-#FederP, IT, Milwaukee, NoBody
-#DavisL, IT, Milwaukee, SomeBody
-
-import-csv C:\NewUsers.csv | ft -AutoSize
+import-csv C:\NewUsers.csv | ft
 help new-aduser 
 import-csv C:\NewUsers.csv | new-aduser #won't work new-aduser requires samAccountname and Name
 
 import-csv C:\NewUsers.csv | Select-Object *, #the comma indicates that we're continuing the list or propeties
 @{name='samAccountName'; expression ={$_.login}},  #Hashtables consist of Key/Value pairs
-@{n='Name';e ={$_.login}}, @{n='Department';e ={$_.Dept}}
+@{n='Name';e ={$_.login}},
+@{n='Department';e ={$_.Dept}}
 
 import-csv C:\NewUsers.csv |
 Select-Object *, @{name='samAccountName';expression ={$_.login}}, @{n='Name';e ={$_.login}}, @{n='Department';e ={$_.Dept}} |
 new-aduser 
 
 #delete ad users
-import-csv C:\NewUsers.csv |get-aduser -Identity {$_.login } | Remove-ADUser
-
-
+get-aduser -Filter 'Name -like "MATC*"'| Remove-ADUser
 
 #did some research to set password and enable account -
 #http://www.windowsnetworking.com/articles-tutorials/windows-server-2012/creating-active-directory-accounts-using-powershell.html
@@ -109,8 +114,3 @@ Set-ADaccountPassword -Reset -NewPassword (ConvertTo-SecureString -AsPlainText '
 #Take what you have seen and delete all the users in IT Support OU
 
 #Take what you have seen and disable all the users accouns in IT Support OU
-
-#Restart all of the computers in the Servers OU
-#region
-Get-ADComputer -Filter * -SearchBase "OU=Servers,DC=ITNET-112,DC=pri" | Select-Object -ExpandProperty name | Restart-Computer
-#endregion
