@@ -29,14 +29,12 @@ Get-EventLog  system #-logname is a positional parameter
 
 Get-EventLog -logname system -Newest 20 -InstanceId 20003 #-newest is an optional paramter
 
-#The following requires that Remote Registry service be started on M410-Boss & Firewall off & PowerShell run as admin
+#The following requires that Remote Registry service be started & Firewall off & PowerShell run as admin
 #get-service RemoteRegistry | Start-Service
 
-#OK Class retrieve the 5 newest entries from the System Log on M410-Boss
-#OK Class from W10-Client, get the eventlog from our domain controller (could be done in Netlab)
+#OK Class retrieve the 5 newest entries from the System Log on a remote system
 
 #region 
-Get-EventLog -ComputerName  -LogName System -Newest 5
 Get-EventLog -ComputerName Server2016-1 -LogName System -Newest 5
 #endregion 
 
@@ -89,7 +87,6 @@ Function Get-NewFiles
 
 get-newfiles
 
-############## Aliases 4.4
 get-command *alias*
 get-command -commandtype alias
 get-command -commandtype cmdlet
