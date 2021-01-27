@@ -16,10 +16,14 @@ certmgr /s my
 
 $cert = @(Get-ChildItem cert:\CurrentUser\My -CodeSigning)[0] 
 Set-AuthenticodeSignature .\test.ps1 $cert
+#Signature block contains a hash of the script and name of the company that signed the script
+#Public key is used to decrypt the signature block and compare the clear text version of script
 
 notepad test.ps1
-#the signatured contains clear test version of script & name of company that signed script
-#Assuming you trust the company, PowerShell will decrypt the signature with public key
-#recall that when a certificate is created it includes a public & private
+#the signatured contains clear test version of script & name of company that signed script & public key
+#PowerShell will decrypt the signature with public key
+#Recall that when a certificate is created it includes a public & private
+#The system can see if signature block was tampered with.
+#The system can determine if the script has been tampered with
 
 .\test.ps1
