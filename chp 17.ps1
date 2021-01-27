@@ -17,7 +17,7 @@ certmgr /s my
 $cert = @(Get-ChildItem cert:\CurrentUser\My -CodeSigning)[0] 
 Set-AuthenticodeSignature .\test.ps1 $cert
 #Signature block contains a hash of the script and name of the company that signed the script
-#Public key is used to decrypt the signature block and compare the clear text version of script
+#Public key is used to decrypt the signature block and compare with a hash of the clear text version of script
 
 notepad test.ps1
 #the signatured contains clear test version of script & name of company that signed script & public key
