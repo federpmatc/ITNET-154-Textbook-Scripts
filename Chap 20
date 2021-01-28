@@ -32,5 +32,17 @@ Get-CimInstance -ClassName win32_process -Filter "name like 'note%'"
 Get-CimInstance -ClassName win32_process -Filter "name like 'note%'"  -ComputerName server2016-2
 
 #Implicit Remoting
+Get-PSSession -ComputerName server2016-2
+$Ses = New-PSSession -ComputerName server2016-2, localhost
+Disconnect-PSSession -Id 6
+Get-PSSession
+
+Connect-PSSession -ComputerName server2016-2
+
+Enter-PSSession -Session ($ses | where computername -eq 'Server2016-2')
+
+Import-PSSession -Module servermanager -Session (Get-PSSession) -Prefix rem
+get-command -noun "rem*"
+Get-remWindowsFeature
 
 
