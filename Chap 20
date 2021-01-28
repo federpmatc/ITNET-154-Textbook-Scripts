@@ -1,0 +1,36 @@
+#Chapter 20 - Creating Re-useable sessions
+
+New-PSSession -ComputerName server2016-2
+Get-PSSession | Remove-PSSession 
+
+#Desirsable to store the session in a variable
+$Ses = New-PSSession -ComputerName server2016-2, localhost
+
+Enter-PSSession -id 3
+
+
+$Ses | where ComputerName -eq "Server2016-2" | Enter-PSSession
+#OR
+Get-PSSession -ComputerName "Server2016-2" | Enter-PSSession
+
+Invoke-Command -Session $ses -ScriptBlock {Get-Host
+}
+
+Invoke-Command -Session $ses -ScriptBlock {
+Get-WmiObject -Class win32_bios
+}
+
+Invoke-Command -Session $ses -ScriptBlock {
+Get-WmiObject -Class win32_process -Filter "name like 'note%'" 
+} | gm
+
+Invoke-Command -Session $ses -ScriptBlock {
+Get-CimInstance -ClassName win32_process -Filter "name like 'note%'" 
+} | gm
+
+
+Get-CimInstance -ClassName win32_process -Filter "name like 'note%'"  -ComputerName server2016-2
+
+#Implicit Remoting
+
+
