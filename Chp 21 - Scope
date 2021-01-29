@@ -1,0 +1,10 @@
+function Output-SalesTax {
+ param( [int]$Price, [int]$Tax )
+ $total = $Price + $Tax
+ $name
+ $name2 = "Vince"
+}
+
+$name2
+$name="Pat Feder"
+Output-SalesTax 100 1
