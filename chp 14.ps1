@@ -1,4 +1,4 @@
-﻿#Go to https://wmie.codeplex.com/ and download Easy to show NameSpace, Class, Instance, Property
+#Go to https://wmie.codeplex.com/ and download Easy to show NameSpace, Class, Instance, Property
 #checkout Root\Hardware Win32_DiskPartition (should see 2 instances of partition class)
 
 #Windows contains 10,000s of pieces of information.  WMI attempts to organize this info into namespaces, classes & instances
