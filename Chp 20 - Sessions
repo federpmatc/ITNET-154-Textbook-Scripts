@@ -46,3 +46,15 @@ get-command -noun "rem*"
 Get-remWindowsFeature
 
 
+$sessions = New-PSSession -ComputerName server2016-1
+Invoke-Command -Session $sessions -ScriptBlock {Import-Module activedirectory
+Get-Module
+Get-Command -Module activedirectory
+}
+
+Import-PSSession -Session $sessions -Module activedirectory -Prefix rem
+gcm -Noun rem*
+
+Get-remADUser -Filter *
+
+$sessions | Remove-PSSession
