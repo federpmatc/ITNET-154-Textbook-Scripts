@@ -1,54 +1,50 @@
 #Chapter 20 - Creating Re-useable sessions
-
-New-PSSession -ComputerName server2016-2
-Get-PSSession | Remove-PSSession 
-
-#Desirsable to store the session in a variable
-$Ses = New-PSSession -ComputerName server2016-2, localhost
-
-Enter-PSSession -id 3
-
-
-$Ses | where ComputerName -eq "Server2016-2" | Enter-PSSession
-#OR
-Get-PSSession -ComputerName "Server2016-2" | Enter-PSSession
-
-Invoke-Command -Session $ses -ScriptBlock {Get-Host
+Invoke-Command -ComputerName Server2016-2 -ScriptBlock {
+$env:COMPUTERNAME
+get-process -Name n*
 }
 
-Invoke-Command -Session $ses -ScriptBlock {
-Get-WmiObject -Class win32_bios
-}
+Enter-PSSession -ComputerName server2016-2  #Will create a 1:1 connection
+Exit-PSSession
 
-Invoke-Command -Session $ses -ScriptBlock {
-Get-WmiObject -Class win32_process -Filter "name like 'note%'" 
-} | gm
-
-Invoke-Command -Session $ses -ScriptBlock {
-Get-CimInstance -ClassName win32_process -Filter "name like 'note%'" 
-} | gm
-
-
-Get-CimInstance -ClassName win32_process -Filter "name like 'note%'"  -ComputerName server2016-2
-
-#Implicit Remoting
-Get-PSSession -ComputerName server2016-2
+#Creating reusable sessions - Desirsable to store the session in a variable
 $Ses = New-PSSession -ComputerName server2016-2, localhost
-Disconnect-PSSession -Id 6
 Get-PSSession
 
-Connect-PSSession -ComputerName server2016-2
+Enter-PSSession -id 7
+Invoke-Command -Session $Ses -ScriptBlock {hostname}
 
+$Ses | Where-Object ComputerName -eq "Server2016-2" | Enter-PSSession
+#OR
+Get-PSSession -ComputerName "Server2016-2" | Enter-PSSession
+#Or
 Enter-PSSession -Session ($ses | where computername -eq 'Server2016-2')
 
-Import-PSSession -Module servermanager -Session (Get-PSSession) -Prefix rem
+Invoke-Command -Session $ses -ScriptBlock {
+Get-WmiObject -class Win32_LogicalDisk -filter "drivetype=3" | 
+Sort-Object -property DeviceID|
+Select-Object -property DeviceID,
+@{name='FreeSpace(MB)';expression={$_.FreeSpace / 1MB -as [int]}},
+@{name='Size(GB';expression={$_.Size / 1GB -as [int]}},
+@{name='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}}
+}
+
+Invoke-Command -Session $ses -ScriptBlock {
+Get-WmiObject -Class win32_process -Filter "name like 'note%'"
+} | gm
+
+#Implicit Remoting
+Get-PSSession -ComputerName "Server2016-2"
+
+Import-PSSession -Module servermanager -Session (Get-PSSession -ComputerName "Server2016-2") -Prefix rem
 get-command -noun "rem*"
-Get-remWindowsFeature
 
+Get-remWindowsFeature  #access features on Server2016-2
+Get-WindowsFeature #access features on local server
 
+#Complete on Server 2016-2 (Member Server)
 $sessions = New-PSSession -ComputerName server2016-1
-Invoke-Command -Session $sessions -ScriptBlock {Import-Module activedirectory
-Get-Module
+Invoke-Command -Session $sessions -ScriptBlock {
 Get-Command -Module activedirectory
 }
 
