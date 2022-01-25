@@ -30,9 +30,7 @@ Get-EventLog  system #-logname is a positional parameter
 Get-EventLog -logname system -Newest 20 -InstanceId 20003 #-newest is an optional paramter
 
 #The following requires that Remote Registry service be started & Firewall off & PowerShell run as admin
-#get-service RemoteRegistry | Start-Service
-#Easy way to check ... enter-pssession -computername server2019-1
-
+#get-service RemoteRegistry
 
 #region 
 Get-EventLog -ComputerName Server2019-1 -LogName System -Newest 5
@@ -47,7 +45,7 @@ notepad C:\servers.txt
 Get-Content "C:\servers.txt"
 
 #The -Computername paramter uses RPC, Remote Registry Service Running and requires Firewall turned off or at least port 445 open
-New-NetFirewallRule -DisplayName Open445 -Direction Inbound -Action Allow -Protocol tcp -LocalPort 445 
+#New-NetFirewallRule -DisplayName Open445 -Direction Inbound -Action Allow -Protocol tcp -LocalPort 445 
 #Set-Service -Name RemoteRegistry -StartupType Manual
 #Set-Service -Name RemoteRegistry -status Running
 #Set-NetFirewallProfile -All -Enabled False
