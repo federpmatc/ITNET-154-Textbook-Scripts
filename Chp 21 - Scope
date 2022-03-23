@@ -1,10 +1,15 @@
 function Output-SalesTax {
  param( [int]$Price, [int]$Tax )
  $total = $Price + $Tax
- $name
+ write-host "The total is $total"
+ write-host "`$name is $name"
  $name2 = "Vince"
+ write-host "`$name2 is $name2"
 }
 
-$name2
 $name="Pat Feder"
 Output-SalesTax 100 1
+Write-host "`$name is $name"
+write-host "`$name2 is $name2"
+
+
