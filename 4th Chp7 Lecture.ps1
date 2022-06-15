@@ -19,14 +19,15 @@ Get-PSRepository    #Registered package repositories containing scripts, modules
 Find-Module *ntfs*    #locate modules in our PS Repository
 Save-Module NTFSSecurity
 
+Get-Module NTFSSecurity | Install-module
 Install-Module NTFSSecurity #install modules
 
 Get-Command -Module NTFSSecurity #Checkout the commands
 
 Get-InstalledModule
 
-Get-NTFSAccess C:\Share
+Get-NTFSAccess -path C:\Share
 Get-Item C:\Share | Get-NTFSAccess
-Get-Item C:\Share | Disable-NTFSInheritance
+Get-Item C:\Share | Disable-NTFSAccessInheritance
 Get-Item C:\Share | Get-NTFSAccess -ExcludeInherited | Export-Csv permissions.csv
-Import-Csv C:\Share | Add-NTFSAccess
+Import-Csv permissions.csv | Add-NTFSAccess
