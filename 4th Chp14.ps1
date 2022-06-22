@@ -34,3 +34,5 @@ Invoke-Command -ComputerName Server2016-2, client1 -asjob -JobName ThisWillFail 
 #Remove-Job - deletes a job and any output still cached in memory
 get-job | Remove-Job
     
+$sb = Get-PSDrive | ?{$_.Free -gt 1} | %{$Count = 0; Write-Host "";} { $_.Name + ": Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;}{Write-Host"";Write-Host "Total Free Space " ("{0:N2}" -f ($Count/1gb)) -backgroundcolor magenta}
+
