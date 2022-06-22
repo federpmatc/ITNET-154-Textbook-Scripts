@@ -4,31 +4,33 @@
 
 #Create a Process Job
 Start-Job {
-Get-CimInstance Win32_Service | Select-Object name,state,startmode,startname
-}
+    Get-Service | Select-Object name,status
+    }
+ 
+Get-Job  #there's a HasMoreData property
 
-start-job {dir c:\
-gsv}
+Receive-Job -id 9
 
-Get-Job   #there's a HasMoreData property
-receive-job -Id 5
+#Creating a Process Job
+Start-ThreadJob -ScriptBlock { Get-ChildItem}
 
 receive-job -id 7 -Keep
-
-get-job -id 11 | select *
-
-start-job -Name ThisWillFail -ScriptBlock {this is dumb; dir}
-get-job
-get-job -Id 13 | select *
-Receive-Job -Id 13
-Receive-Job -id 14
  
-Invoke-Command -ComputerName Server2016-2, client1 -asjob -JobName ThisWillFail -ScriptBlock {this is dumb; dir}       
-Get-Job -id 23 | Select-Object  -ExpandProperty childjobs
+#Remoting as a job
+Invoke-Command -ScriptBlock {hostname} -ComputerName Server2019-1,W10-Client -AsJob
 
-get-job -id 25
-Receive-Job -Id 25
-Receive-Job -Id 24
-Receive-Job -id 23
+#Invoke-Command Added the PSComputerName property
+Invoke-Command -ScriptBlock {Get-Service | Select-Object -First 2} -ComputerName Server2019-1,W10-Client -AsJob
+start-job -Name ThisWillFail -ScriptBlock {this is dumb}
 
-Receive-Job -Id 26
+get-job | Out-GridView
+get-job -Id 22 | select *
+     
+Invoke-Command -ComputerName Server2016-2, client1 -asjob -JobName ThisWillFail -ScriptBlock {
+    this is dumb; d}
+
+#Managing jobs
+
+#Remove-Job - deletes a job and any output still cached in memory
+get-job | Remove-Job
+    
