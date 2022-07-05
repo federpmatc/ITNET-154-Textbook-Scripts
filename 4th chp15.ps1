@@ -1,11 +1,10 @@
 
 #WMI Commandlets accessing the WMI repository
 
-#CIM Commandlets also access the WMI respository
 #CIM commandlets are newer and provide better remoting capabilities
 
-Get-CimInstance Win32_logicaldisk -ComputerName "Server2019-2"
-Invoke-Command -ComputerName Server2019-1 -ScriptBlock{Get-CimInstance Win32_logicaldisk} 
+Get-CimInstance Win32_logicaldisk -ComputerName "Server2019-1"
+Invoke-Command -ComputerName Server2019-1 -ScriptBlock {Get-CimInstance Win32_logicaldisk} 
 
 #Install WMI Explorer download Easy to show NameSpace, Class, Instance, Property
 #Checkout Win32 LogicalDisk
@@ -29,13 +28,15 @@ Get-CimInstance -Class win32_bios
 #when run locally there is no real difference
 get-ciminstance Win32_logicaldisk
 
-Get-ciminstance win32_service | Where-Object state -eq ‘Running’
+Get-ciminstance win32_service | Where-Object state -ne ‘Running’
 Get-CimInstance win32_service | Where-Object {($_.state -eq 'Running') -and ($_.status -eq 'OK')}
 Get-CimInstance win32_service -Filter "state = 'Running' and status='OK'" -ComputerName Server2019-1
 
+Get-Service | Where-Object state -eq 'Running'
+
 #-Parallel runs up to 5 script blocks in parallel
 Measure-Command {
-1..5 | ForEach-Object -Parallel {
+1..15 | ForEach-Object -parallel {
     Write-Host $_
     sleep -Seconds 1
 }
@@ -44,21 +45,22 @@ Measure-Command {
 
 
 #Question #1
-Get-ChildItem | gm
+Get-ChildItem | Get-Member
 
 #Question #2
-Get-Process | gm | where MemberType -eq Method
-Get-Process | gm -MemberType -eq Method
+Get-Process | gm | Where-Object MemberType -eq Method
+Get-Process | gm -MemberType Property
 
 #Question #3
 New-Item -ItemType File "patdeleteme.txt"
 New-Item -ItemType File "patReallydeleteme.txt"
 New-Item -ItemType Directory "patsdeletemeDirectory"
-Get-ChildItem *deleteme* | gm
-Get-ChildItem *deleteme* | Remove-Item -Force
-Get-ChildItem *deleteme* | ForEach-Object {$_.Delete()}
-Remove-Item *deleteme*
+Get-ChildItem *deleteme* |gm -MemberType method
+Get-ChildItem *deleteme* | Remove-Item 
+Get-ChildItem *deleteme* | ForEach-Object -parallel {$_.Delete()}
+Get-ChildItem *deleteme* | Remove-Item
 
-#Quesdtion #4
-get-content computers.xt | foreach {$_.ToUpper()}
-Get-ChildItem *deleteme* | ForEach-Object {$_.name.ToUpper()}
+
+#Question #4
+get-content computers.xt | foreach-object {$_.ToUpper()}
+Get-ChildItem *deleteme* |ForEach-Object {$_.name.ToUpper()}
