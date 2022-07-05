@@ -1,28 +1,21 @@
 
 #WMI Commandlets accessing the WMI repository
+
 #CIM Commandlets also access the WMI respository
 #CIM commandlets are newer and provide better remoting capabilities
 
-Get-CimInstance Win32_logicaldisk -ComputerName "Server2016-2"
-Invoke-Command -ComputerName Server2016-2 -ScriptBlock{Get-CimInstance Win32_logicaldisk
-}
+Get-CimInstance Win32_logicaldisk -ComputerName "Server2019-2"
+Invoke-Command -ComputerName Server2019-1 -ScriptBlock{Get-CimInstance Win32_logicaldisk} 
 
-#Go to https://wmie.codeplex.com/ and download Easy to show NameSpace, Class, Instance, Property
-#checkout Root\Hardware Win32_DiskPartition (should see 2 instances of partition class)
-
+#Install WMI Explorer download Easy to show NameSpace, Class, Instance, Property
+#Checkout Win32 LogicalDisk
 #Windows contains 10,000s of pieces of information.  WMI attempts to organize this info into namespaces, classes & instances
 
 #WMI is external from PowerShell, but PS does interface.  
 
 #WMI cmdlets are legacy and use DCOM and RPC protocols
 
-Get-WmiObject -list -Class "*partition*"  #-list means list all classes
-gwmi -ClassName Win32_diskpartition # multiple instances of this class
-gwmi win32_diskpartition | Get-Member
-gwmi win32_diskpartition | Select-Object systemName, Size
-
-Get-CimInstance -ClassName Win32_DiskPartition
-#CIM uses http, firewall friendly, CIM get’s XML returned, where as WMI gets live objects returned
+Get-CimInstance -ClassName Win32_DiskPartition 
 
 #Display the Cmdlet that use CIM
 get-command -module cimcmdlets 
@@ -34,24 +27,25 @@ Get-CimClass -class *bios*
 Get-CimInstance -Class win32_bios
 
 #when run locally there is no real difference
-get-wmiobject win32_logicaldisk
 get-ciminstance Win32_logicaldisk
 
-Get-wmiobject win32_service | ft
 Get-ciminstance win32_service | Where-Object state -eq ‘Running’
 Get-CimInstance win32_service | Where-Object {($_.state -eq 'Running') -and ($_.status -eq 'OK')}
-Get-CimInstance win32_service -Filter "state = 'Running' and status='OK'" -ComputerName Server2016-2
+Get-CimInstance win32_service -Filter "state = 'Running' and status='OK'" -ComputerName Server2019-1
 
-Get-WmiObject win32_logicaldisk | Where-Object drivetype -eq 3
-Get-WmiObject win32_logicaldisk -filter “drivetype=3”
+#-Parallel runs up to 5 script blocks in parallel
+Measure-Command {
+1..5 | ForEach-Object -Parallel {
+    Write-Host $_
+    sleep -Seconds 1
+}
+}
 
-#Get-wmiobject supports -credential parameter (CIM does not, you need to use invoke command)
-Get-WmiObject win32_logicaldisk -Filter "drivetype=3" -ComputerName Server2016-2 -Credential student
 
-#The following examples are based on the questions from chapter 14
 
 #Question #1
-Get-CimClass -ClassName *network*
+Get-CimClass -Cl
+
 #Google Win32_NetworkAdapterConfiguration
 Get-WmiObject -Class Win32_NetworkAdapterConfiguration
 Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object IPAddress -ne $null
