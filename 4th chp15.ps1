@@ -44,33 +44,21 @@ Measure-Command {
 
 
 #Question #1
-Get-CimClass -Cl
-
-#Google Win32_NetworkAdapterConfiguration
-Get-WmiObject -Class Win32_NetworkAdapterConfiguration
-Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object IPAddress -ne $null
-Get-CimInstance -ClassName Win32_NetworkAdapterConfiguration | Select-Object IPAddress, Index
-Get-CimInstance -ClassName win32_NetworkAdapterConfiguration  | where-Object IPAddress -ne $null | Select-Object IPAddress, Index 
-Get-CimInstance -ClassName win32_NetworkAdapterConfiguration  | where-Object {$_.IPAddress -ne $null} | ForEach-Object {"IP Address: $($_.IPAddress) `t NIC Index:$($_.Index)"}
+Get-ChildItem | gm
 
 #Question #2
-gwmi -Class win32_bios | Select-Object __Server
-gwmi -Class win32_bios | Select-Object @{l='ComputerName';e={$_.__Server}}
-gwmi -Class win32_bios | Select-Object SerialNumber
+Get-Process | gm | where MemberType -eq Method
+Get-Process | gm -MemberType -eq Method
 
-Get-CimInstance Win32_OperatingSystem | select BuildNumber, Caption, @{l='ComputerName';e={$_.CSNAME}}
-Get-CimInstance Win32_OperatingSystem | select BuildNumber, Caption, @{l='ComputerName';e={$_.CSNAME}}, @{l='BIOSSerialNumber';e={(Get-CimInstance win32_bios).SerialNumber }}
+#Question #3
+New-Item -ItemType File "patdeleteme.txt"
+New-Item -ItemType File "patReallydeleteme.txt"
+New-Item -ItemType Directory "patsdeletemeDirectory"
+Get-ChildItem *deleteme* | gm
+Get-ChildItem *deleteme* | Remove-Item -Force
+Get-ChildItem *deleteme* | ForEach-Object {$_.Delete()}
+Remove-Item *deleteme*
 
-#Invoke coommand can be used to get info from a remote machine
-Invoke-Command -ComputerName server2016-2{
-Get-CimInstance Win32_OperatingSystem |
-select BuildNumber, caption, CSNAME, @{l='BIOSSerialNumber';e={(Get-CimInstance win32_bios).SerialNumber }}
-}
-
-#Question #4
-Get-CimInstance Win32_Service| Select-Object Name,State,StartMode,StartName | Select-Object -First 5
-
-#Invoke coommand can be used to get info from a remote machine
-Invoke-Command -ComputerName server2016-2{
-Get-CimInstance Win32_Service | Select-Object name,state,startmode,startname | Select-Object -First 3
-}
+#Quesdtion #4
+get-content computers.xt | foreach {$_.ToUpper()}
+Get-ChildItem *deleteme* | ForEach-Object {$_.name.ToUpper()}
