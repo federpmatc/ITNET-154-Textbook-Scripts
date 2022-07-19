@@ -1,3 +1,4 @@
+#This is a comment
 <#
 .SYNOPSIS
 Get-DiskInventory retrieves logical disk information from one or
@@ -18,10 +19,15 @@ Get-DiskInventory -ComputerName SRV02 -drivetype 3
 [CmdletBinding()]
 param (
 [Parameter(Mandatory=$True, HelpMessage="Enter a computer name!!!")]
+[Alias('host')]
 [string]$computername,
 
+[ValidateSet(2,3)]
 [int]$drivetype = 3
 )
+Write-Verbose "Connecting to $computername"
+Write-Verbose "Looking for drive type $drivetype"
+
 Get-CimInstance -class Win32_LogicalDisk -ComputerName $computername `
  -filter "drivetype=$drivetype" |
  Sort-Object -property DeviceID |
@@ -29,3 +35,5 @@ Get-CimInstance -class Win32_LogicalDisk -ComputerName $computername `
  @{label='FreeSpace(MB)';expression={$_.FreeSpace / 1MB -as [int]}},
  @{label='Size(GB)';expression={$_.Size / 1GB -as [int]}},
  @{label='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}}
+
+Write-Verbose "All done!!!!!"
