@@ -33,7 +33,13 @@ Test-Connection -computername (get-adcomputer -filter {name -like '*Server*'} | 
 #This will delete all users
 get-aduser -Filter "name -like 'user*'" | Remove-ADUser -Confirm:$false
 
-#A .csv file was created as described in Chapter 9, question 6
+#This .csv file was used in Chapter 9, question 6
+New-Item -ItemType File -Name Chp10Q6.csv -Path ~
+Add-Content -Path ~/Chp10Q6.csv -Value "Name,Company,City,Title"
+Add-Content -Path ~/Chp10Q6.csv -Value "User1,MATC,Milwaukee,Student"
+Add-Content -Path ~/Chp10Q6.csv -Value "User2,MATC,Hartland,Instructor"
+Add-Content -Path ~/Chp10Q6.csv -Value "User3,MATC,Waukesha,Admin"
+
 notepad.exe .\Chp10Q6.csv
 Get-content .\Chp10Q6.csv
 
