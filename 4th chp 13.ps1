@@ -77,6 +77,7 @@ Enter-PSSession -ComputerName W10-Client -Credential $credential
 
 #basic session opened to remote device
 $session = New-PSSession -ComputerName W10-Client -Credential itnet\admin
+#session variable contains information about the active session we have with the remote machine
 
 #establish sessions to multiple devices
 $credential = Get-Credential
@@ -91,10 +92,15 @@ $multiSession = New-PSSession -ComputerName $devices -Credential $credential
 
 #region Invoke-Command examples
 Invoke-Command -Session $multiSession -ScriptBlock { gsv |Select-Object -First 2 }
+#the machines will all work in parallel, so first machine to responds get its info presented
+#you may need to include machine name in script
 
 #get the number of CPUs for each remote device
 Invoke-Command -Session $session -ScriptBlock { (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors }
+#you may need to include machine name in script
+
 Invoke-Command -Session $multiSession -ScriptBlock { (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors }
+#you may need to include machine name in script
 
 #get the amount of RAM for each remote device
 Invoke-Command -Session $session -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { $_.sum / 1MB } }
@@ -109,6 +115,8 @@ Invoke-Command -Session $multiSession -ScriptBlock {
     $msg = "$env:COMPUTERNAME has $perfree %free space"
     return $msg
 }
+#machine name in script
+
 
 #get the number of CPUs for each remote device
 Invoke-Command -Session $multiSession -ScriptBlock { "$env:COMPUTERNAME $((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors)" 
