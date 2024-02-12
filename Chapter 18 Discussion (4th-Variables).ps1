@@ -24,12 +24,17 @@ $svc = Get-Service
 $svc[0].name
 $name = $svc[1].name #The period means, “I don’t want that entire object. I just want a property or method
 $name.length
-$name.ToUpper()   #Methods always use parantheses.  Some methods allow for input
+$name.ToUpper()   #Methods always use parentheses.  Some methods allow for input
 
 $service = 'bits'
 $name = "Service is $service.ToUpper()" #PowerShell thinks we're only referring to the variable (not the method)
+$name
 $upper = $name.ToUpper()
 $name = "Service is $upper"
+$name
+$service = 'bits'
+$name = "Service is $($service.ToUpper())" #PowerShell thinks we're only referring to the variable (not the method)
+$name
 
 #parentheses also act as an order-of-execution marker for Windows PowerShell
 $name = (Get-Service)[0].name
