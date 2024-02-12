@@ -33,7 +33,9 @@ $phrase
 
 $phrase = "`$computername is equal to $computername"
 $phrase
-$phrase = "`$computername`ncontains`n$computername"
+
+$phrase = "`$computername`ncontains`n$computername"
+
 $phrase
 $phrase.ToUpper()
 $phrase.ToLower()
