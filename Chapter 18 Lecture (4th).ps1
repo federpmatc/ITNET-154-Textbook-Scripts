@@ -1,9 +1,9 @@
 #Variables
 #1.) Review Code Below
 
-#PowerShell variables are preceeded by a $
+#PowerShell variables are preceded by a $
 #Variables can contain objects .. which is anything
-$name = 'Server2016-1'
+$name = 'Server2019-1'
 
 #PowerShell provides access to environment variables through env: drive
 #Environment variables store information about the operating system environment.
@@ -54,7 +54,7 @@ $phrase = "the computer `t name is`n `$$name "
 $phrase
 
 #array of objects
-$names = 'Server2016-1', 'Server2016-2', 'LocalHost'
+$names = 'Server2019-1', 'Server2019-2', 'LocalHost'
 $names
 
 $names[0]
