@@ -28,15 +28,18 @@
 
 # Per PowerShell documentation you can find a list of cmdlets that support ComputerName with the following:
 #In Windows Powershell we see more commands b/c DCOM protocol was used
-#PowerShell we rely on WinRM protocol and InvokeCommand
+#For remoting on Windows with PowerShell we rely on WSMAn protocol and InvokeCommand
+#WSMan is implemented with the WinRM service
+
 Get-Command -ParameterName ComputerName
 
 # this will prompt you to enter your access credentials. the creds will be securely stored in the variable
 $creds = Get-Credential
+#admin or ITNET\Admin or Admin@itnet.pri
 #password is secure and can be sent over the wire
 
 # restart a single computer
-Restart-Computer -ComputerName W10-Client -Credential $creds -Force
+Restart-Computer -ComputerName W10-Client -Credential $creds -Confirm   #Disabling the WinRM service on client prevents this from working
 
 # restart several computers
 Restart-Computer -ComputerName W10-Client, Server2019-2 -Credential $creds
