@@ -42,21 +42,25 @@ $creds = Get-Credential
 Restart-Computer -ComputerName W10-Client -Credential $creds -Confirm   #Disabling the WinRM service on client prevents this from working
 
 # restart several computers
-Restart-Computer -ComputerName W10-Client, Server2019-2 -Credential $creds
+Restart-Computer -ComputerName W10-Client, Server2019-2 -Credential $creds -Confirm
 
 # restart an entire list of computers
-$devices = Get-Content -Path C:\listOfServers.txt
-Restart-Computer -ComputerName $devices -Credential $Creds -Force
+New-Item -Path ~\listOfServers.txt
+Add-content -Path ~\listOfServers.txt "W10-Client", "Server2019-2"
+Get-Content ~\listOfServers.txt
+$devices = Get-Content -Path ~\listOfServers.txt
+Restart-Computer -ComputerName $devices -Credential $Creds -Confirm
 
 #endregion
 
 #region WinRM
 
 #verify that WinRM is setup and configured locally
+#Recall that WinRM is Microsoft's implementation of WSMan protocl
 Test-WSMan
 
 # basic WinRM configuration with default settings
-winrm quickconfig
+Enable-PSRemoting
 
 # check winrm settings
 winrm get winrm/config/client
@@ -66,13 +70,15 @@ winrm get winrm/config/service #admin priv.
 #you must specify the authentication type when testing a remote device.
 #if you are unsure about the authentication, set it to Negotiate
 $credential = Get-Credential
-Test-WSMan  W10-Client 
+Test-WSMan  "W10-Client"
+Test-WSMan  "Server2019-2"
 
 #verify local device is listening on WinRM port
 Get-NetTCPConnection -LocalPort 5985
 
 #verify a remote device is listening on WinRM port
 Test-NetConnection -Computername 192.168.222.101 -Port 5985
+Test-NetConnection -Computername W10-Client -Port 5985
 
 #establish an interactive remote session
 $credential = Get-Credential
@@ -102,8 +108,12 @@ Invoke-Command -Session $multiSession -ScriptBlock { gsv |Select-Object -First 2
 Invoke-Command -Session $session -ScriptBlock { (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors }
 #you may need to include machine name in script
 
-Invoke-Command -Session $multiSession -ScriptBlock { (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors }
+Invoke-Command -Session $multiSession -ScriptBlock { HOSTNAME.EXE
+    (Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors 
+}
 #you may need to include machine name in script
+Invoke-Command -Session $multiSession -ScriptBlock { "$(HOSTNAME.EXE) has this many processors $((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors) "
+}
 
 #get the amount of RAM for each remote device
 Invoke-Command -Session $session -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { $_.sum / 1MB } }
@@ -120,16 +130,15 @@ Invoke-Command -Session $multiSession -ScriptBlock {
 }
 #machine name in script
 
-
 #get the number of CPUs for each remote device
 Invoke-Command -Session $multiSession -ScriptBlock { "$env:COMPUTERNAME $((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors)" 
 }
 
 #get the amount of RAM for each remote device
-Invoke-Command -Session $sessions -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { [Math]::Round($_.sum / 1024 / 1024) } }
+Invoke-Command -Session $session -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { [Math]::Round($_.sum / 1024 / 1024) } }
 
 #get the amount of free space on the C: drive for each remote device
-Invoke-Command -Session $sessions -ScriptBlock {
+Invoke-Command -Session $session -ScriptBlock {
     $driveData = Get-PSDrive C | Select-Object Used, Free
     $total = $driveData.Used + $driveData.Free
     $calc = [Math]::Round($driveData.Free / $total, 2)
