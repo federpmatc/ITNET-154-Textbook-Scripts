@@ -35,6 +35,10 @@ Invoke-Command -ComputerName Server2019-2 -ScriptBlock {
     #Implicit Remoting
     $ServerSes = New-PSSession -ComputerName Server2019-2
     
+    #Import commands from a remote computer/session
+    #Commands remain available until close session or shell
+    #Executing these commands causes them to be executed on remote system and send back results
+    #The objects returned are deserialized.  (We get object info not methods)
     Import-PSSession -Module servermanager -Session $ServerSes -Prefix rem
     get-command -noun "rem*"
     
