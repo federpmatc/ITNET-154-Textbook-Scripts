@@ -1,4 +1,4 @@
-#Chapter 20 - Creating Re-useable sessions
+#Chapter 18 - Creating Re-useable sessions
 Invoke-Command -ComputerName Server2019-2 -ScriptBlock {
 $env:COMPUTERNAME
 get-process -Name n*
