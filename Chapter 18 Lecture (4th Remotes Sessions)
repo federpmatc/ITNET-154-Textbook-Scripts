@@ -1,56 +1,55 @@
 #Chapter 18 - Creating Re-useable sessions
 Invoke-Command -ComputerName Server2019-2 -ScriptBlock {
-$env:COMPUTERNAME
-get-process -Name n*
-}
+    $env:COMPUTERNAME
+    Hostname
+    get-process -Name n*
+    }
+    
+    Enter-PSSession -ComputerName server2019-2  #Will create a 1:1 connection
+    Exit-PSSession
+    
+    #Creating reusable sessions - Desirsable to store the session in a variable
+    $Ses = New-PSSession -ComputerName server2019-2, W10-Client
+    Get-PSSession
+    
+    Enter-PSSession -id 10
+    Exit-PSSession
+    
+    Invoke-Command -Session $Ses -ScriptBlock {hostname}
+    
+    $Ses | Where-Object ComputerName -eq "Server2019-2" | Enter-PSSession
+    #OR
 
-Enter-PSSession -ComputerName server2019-2  #Will create a 1:1 connection
-Exit-PSSession
+    Enter-PSSession -Session ($ses | Where-Object computername -eq 'Server2019-2')
+    
+    Invoke-Command -Session $ses -ScriptBlock {
+        Get-CimInstance -classname Win32_LogicalDisk -filter "drivetype=3" | 
+        Sort-Object -property DeviceID|
+        Select-Object -property DeviceID,
+        @{name='FreeSpace(MB)';expression={$_.FreeSpace / 1MB -as [int]}},
+        @{name='Size(GB';expression={$_.Size / 1GB -as [int]}},
+        @{name='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}}
+    }
+    
 
-#Creating reusable sessions - Desirsable to store the session in a variable
-$Ses = New-PSSession -ComputerName server2019-2, localhost
-Get-PSSession
-
-Enter-PSSession -id 7
-Invoke-Command -Session $Ses -ScriptBlock {hostname}
-
-$Ses | Where-Object ComputerName -eq "Server2019-2" | Enter-PSSession
-#OR
-Get-PSSession -ComputerName "Server2019-2" | Enter-PSSession
-#Or
-Enter-PSSession -Session ($ses | where computername -eq 'Server2019-2')
-
-Invoke-Command -Session $ses -ScriptBlock {
-Get-WmiObject -class Win32_LogicalDisk -filter "drivetype=3" | 
-Sort-Object -property DeviceID|
-Select-Object -property DeviceID,
-@{name='FreeSpace(MB)';expression={$_.FreeSpace / 1MB -as [int]}},
-@{name='Size(GB';expression={$_.Size / 1GB -as [int]}},
-@{name='%Free';expression={$_.FreeSpace / $_.Size * 100 -as [int]}}
-}
-
-Invoke-Command -Session $ses -ScriptBlock {
-Get-WmiObject -Class win32_process -Filter "name like 'note%'"
-} | gm
-
-#Implicit Remoting
-Get-PSSession -ComputerName "Server2019-2"
-
-Import-PSSession -Module servermanager -Session (Get-PSSession -ComputerName "Server2019-2") -Prefix rem
-get-command -noun "rem*"
-
-Get-remWindowsFeature  #access features on Server2019-2
-Get-WindowsFeature #access features on local server
-
-#Complete on Server 2019-2 (Member Server)
-$sessions = New-PSSession -ComputerName server2019-1
-Invoke-Command -Session $sessions -ScriptBlock {
-Get-Command -Module activedirectory
-}
-
-Import-PSSession -Session $sessions -Module activedirectory -Prefix rem
-gcm -Noun rem*
-
-Get-remADUser -Filter *
-
-$sessions | Remove-PSSession
+    #Implicit Remoting
+    $ServerSes = New-PSSession -ComputerName Server2019-2
+    
+    Import-PSSession -Module servermanager -Session $ServerSes -Prefix rem
+    get-command -noun "rem*"
+    
+    Get-remWindowsFeature  #access features on Server2019-2
+    Get-WindowsFeature #access features on local server
+    
+    #Complete on Server 2019-2 (Member Server)
+    $sessions = New-PSSession -ComputerName server2019-1
+    Invoke-Command -Session $sessions -ScriptBlock {
+        Get-Command -Module activedirectory
+    }
+    
+    Import-PSSession -Session $sessions -Module activedirectory -Prefix rem
+    gcm -Noun rem*
+    
+    Get-remADUser -Filter *
+    
+    $sessions | Remove-PSSession
