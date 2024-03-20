@@ -1,4 +1,4 @@
-#Chapter 19 (write-host)
+#Chapter 17 (write-host)
 #https://stackoverflow.com/questions/19754069/powershell-difference-between-write-host-and-write-output#:~:text=In%20a%20nutshell%2C%20Write%2DHost,is%20implicitly%20called%20for%20you.
 #https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_output_streams?view=powershell-7.4
 
@@ -9,13 +9,14 @@
 #This enables the capture or suppression of data written using Write-Host while preserving backwards compatibility.
 Write-Host "Hello World" -ForegroundColor Blue -BackgroundColor Yellow #write host writes directly to hosting application, so we have more control
 Write-Output "Hello World"   #write-output sends info to pipeline (no optiopns for formatting)
+"hello world"
 
 #PowerShell has a few otherways to produce output
-$InformationPreference =  'Continue' #configuration variable
+$InformationPreference = 'continue' #configuration variable
 Write-Information "Hello World"  #write to information stream
 
 #When events occur (like errors, they are sent to the approriate stream)
-$ErrorActionPreference = 'Continue'  #Configuration variables control what happens
+$ErrorActionPreference = 'continue'  #Configuration variables control what happens
 Write-Error "Hello World"  #write to Error stream
 
 $ErrorActionPreference = 'SilentlyContinue'  #Configuration variables control what happens
@@ -25,13 +26,13 @@ Write-Error "Hello World"  #write to Error stream
 #The verbose message stream is used to deliver more in depth information about command processing.
 #By default, the verbose message stream is not displayed, but you can display it by changing the value of the $VerbosePreference variable or using the Verbose common parameter in any command.
 
-$VerbosePreference = 'Continue'
-Write-Verbose "Hello World"  #write to Error stream
+$VerbosePreference = 'SilentlyContinue'
+Write-Verbose "line 15"  #write to Error stream
 
 
 #More fun with the pipeline!
-$a = 'Testing Write-OutPut'  | Write-Output
-$b = 'Testing Write-Host' | Write-Host   #nothing goes to pipeline.  Data is sent directly to information stream
+$a = get-process  | Write-Output
+$b = Get-Process | Write-Host   #nothing goes to pipeline.  Data is sent directly to information stream
 
 $a
 $b   #equal to null, because nothing is added to pipeline. Output goes directly to hosting application
