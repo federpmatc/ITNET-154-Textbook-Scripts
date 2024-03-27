@@ -1,0 +1,23 @@
+$ifIndex = Get-NetAdapter -Physical | Select-Object -ExpandProperty ifIndex
+
+New-netIPAddress -IPAddress 192.168.222.10 -PrefixLength 24 -DefaultGateway 192.168.222.201 -InterfaceIndex $ifIndex
+
+Set-DnsClientServerAddress -InterfaceIndex $ifIndex -ServerAddresses 192.168.222.10
+
+#rename computer
+Rename-Computer -NewName DC1
+Restart-Computer 
+
+
+$ifIndex = Get-NetAdapter -Physical | Select-Object -ExpandProperty ifIndex
+
+#Remove IP address
+$interface = Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily "IPv4"
+If ($interface.Dhcp -eq "Disabled") {
+ # Remove existing gateway
+If (($interface | Get-NetIPConfiguration).Ipv4DefaultGateway) {$interface | Remove-NetRoute -Confirm:$false}
+ # Enable DHCP
+ $interface | Set-NetIPInterface -DHCP Enabled
+ # Configure the DNS Servers automatically
+ $interface | Set-DnsClientServerAddress -ResetServerAddresses
+}
