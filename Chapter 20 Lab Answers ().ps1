@@ -8,14 +8,14 @@ The name of the computer to check.
 .Example
 PS C:\> c:\scripts\Get-PhysicalAdapters -computer SERVER01
 #>
-[cmdletbinding()]
+[cmdletbinding()]   #
 Param (
-[Parameter(Mandatory=$True,HelpMessage="Enter a computername to query")]
+[Parameter(Mandatory=$True, HelpMessage="Enter a computername to query")]
 [alias('host')]
 [string]$Computername
 )
 Write-Verbose "Getting physical network adapters from $computername"
 Get-CimInstance -class win32_networkadapter –computername $computername |
- where { $_.PhysicalAdapter } |
- select MACAddress,AdapterType,DeviceID,Name,Speed
+ Where-Object { $_.PhysicalAdapter } |
+ Select-Object MACAddress,AdapterType,DeviceID,Name,Speed
 Write-Verbose "Script finished."
