@@ -11,10 +11,10 @@ The DNS Address to configure system with
 The Subnet Mask to configure system with.  Specified as number of bits
 .Parameter ComputerName
 The ComputerName to configure system with
-
 .Example
 PS .\ConfigIP.ps1 -IP "192.168.222.20" -DNS "192.168.222.10" -Subnet 24 -ComputerName "DC2" -DFG "192.168.222.201"
 #>
+
 #[cmdletbinding()]   #Must be the first line after comment-based help, adds advanced features
 Param (
 [Parameter(Mandatory=$True)]
