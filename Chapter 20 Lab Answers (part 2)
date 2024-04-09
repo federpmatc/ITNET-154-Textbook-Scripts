@@ -24,7 +24,7 @@ Param (
 [Parameter(Mandatory=$True)]
 [string]$DNS,
 [Parameter(Mandatory=$True)]
-[int]$Subnet,
+[byte]$Subnet,
 [Parameter(Mandatory=$True)]
 [string]$DFG
 )
@@ -54,5 +54,6 @@ New-netIPAddress -IPAddress $IP -PrefixLength $Subnet -DefaultGateway $DFG -Inte
 Set-DnsClientServerAddress -InterfaceIndex $ifIndex -ServerAddresses $DNS
 
 #rename computer
-#Rename-Computer -NewName $ComputerName
-#Restart-Computer 
+Rename-Computer -NewName $ComputerName
+write-host "Your system is going to reboot" -ForegroundColor Cyan -BackgroundColor DarkYellow
+Restart-Computer -Confirm
