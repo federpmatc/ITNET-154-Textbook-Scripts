@@ -10,9 +10,9 @@ The DNS Address to configure system with
 .Parameter Subnet
 The Subnet Mask to configure system with.  Specified as number of bits
 .Parameter ComputerName
-The ComputerName to configure system with
+The Computerame to configure system with
 .Example
-PS .\ConfigIP.ps1 -IP "192.168.222.20" -DNS "192.168.222.10" -Subnet 24 -ComputerName "DC2" -DFG "192.168.222.201"
+PS .\ConfigIP.ps1 -IP "192.168.222.20" -DNS "192.168.222.10" -Subnet 24 -ComputerName "Server2019-2" -DFG "192.168.222.201"
 #>
 
 #[cmdletbinding()]   #Must be the first line after comment-based help, adds advanced features
@@ -51,9 +51,8 @@ If (($interface | Get-NetIPConfiguration).Ipv4DefaultGateway) {$interface | Remo
 $ifIndex = Get-NetAdapter -Physical | Select-Object -ExpandProperty ifIndex
 
 New-netIPAddress -IPAddress $IP -PrefixLength $Subnet -DefaultGateway $DFG -InterfaceIndex $ifIndex
-
 Set-DnsClientServerAddress -InterfaceIndex $ifIndex -ServerAddresses $DNS
 
 #rename computer
-Rename-Computer -NewName $ComputerName
-Restart-Computer 
+#Rename-Computer -NewName $ComputerName
+#Restart-Computer 
