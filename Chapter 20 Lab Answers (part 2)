@@ -57,3 +57,5 @@ Set-DnsClientServerAddress -InterfaceIndex $ifIndex -ServerAddresses $DNS
 Rename-Computer -NewName $ComputerName
 write-host "Your system is going to reboot" -ForegroundColor Cyan -BackgroundColor DarkYellow
 Restart-Computer -Confirm
+
+#Note - Get-NetIPConfiguration to display IP info
