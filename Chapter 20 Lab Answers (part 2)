@@ -59,3 +59,4 @@ write-host "Warning!!! Your system is going to reboot!!!" -ForegroundColor Cyan 
 Restart-Computer -Confirm
 
 #Note - Get-NetIPConfiguration to display IP info
+#PowerShell byte is an 8 bit unsigned integer  (i.e. 0 to 255)
