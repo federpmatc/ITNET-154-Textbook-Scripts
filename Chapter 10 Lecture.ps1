@@ -3,15 +3,14 @@
 #ByPropertyname - Looks at output objects PROPERTIES and lines them up input object PARAMETERS
 
 New-Item ~\computers.txt -ItemType file -Force
-Add-Content -Path ~\computers.txt "Server2019-2", "W10-client"
+Add-Content -Path ~\computers.txt "Server22-02", "Win11-client"
 Get-Content ~\computers.txt
 Set-Location ~
 notepad computers.txt
+get-content ~\computers.txt
 
 #Disable firewall on remote computer
 Set-NetFirewallProfile -all -Enabled False
-
-get-content ~\computers.txt
 
 get-content ~\computers.txt | get-service
 #let's figure out what went wrong
@@ -24,7 +23,7 @@ get-content ~\computers.txt | Restart-Computer -Confirm  -force #Computer Name
 get-content ~\computers.txt | Test-Connection   #target name
 
 #generate a string[] with computer names
-Restart-Computer -confirm -ComputerName ("Server2019-1")
+Restart-Computer -confirm -ComputerName ("Server22-02")
 Restart-Computer -computername (get-content ~\computers.txt) -Confirm 
 Test-Connection -TargetName (get-content ~\computers.txt)  
 
@@ -33,13 +32,18 @@ Test-Connection -TargetName (get-content ~\computers.txt)
 Test-Connection -targetname ( get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | select-object -expand name )
 
 #Example
-$computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | select  @{n='ComputerName';e={$_.name}}
+$computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | select-object -expand  name  #select  @{n='ComputerName';e={$_.name}}
+$computers | gm
 $computers | Test-Connection #ByValue
+
+$computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | Select-Object  @{n='ComputerName';e={$_.name}}
+$computers | gm
+$computers | Test-Connection #ByProperty
 
 #ByPropertyName
 get-adcomputer -filter * -SearchBase "CN=Computers, dc=ITNET, dc=pri"
 get-adcomputer -filter * -SearchBase "CN=Computers, dc=ITNET, dc=pri" | Test-Connection
-get-adcomputer -filter * -SearchBase "CN=Computers, dc=itnet, dc=pri" |select  *,@{n='TargetName';e={$_.name}} | Test-Connection
+get-adcomputer -filter * -SearchBase "CN=Computers, dc=itnet, dc=pri" |Select-Object  *,@{n='TargetName';e={$_.name}} | Test-Connection
 
 get-adcomputer -filter * -SearchBase "CN=Computers, dc=itnet, dc=pri" |Select-Object  *,@{n='TargetName';e={$_.name}} | Restart-Computer -Confirm
 
