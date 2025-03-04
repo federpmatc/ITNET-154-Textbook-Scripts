@@ -9,6 +9,9 @@
 
 #Windows Remote Management
 #https://docs.microsoft.com/en-us/windows/win32/winrm/portal
+#Windows Remote Management (WinRM) is a Microsoft tool that allows you to manage and monitor remote computers. 
+#It's built on the WS-Management protocol, which enables different operating systems and hardware to communicate with each other.
+
 
 #Installation and Configuration for Windows Remote Management
 #https://docs.microsoft.com/en-us/windows/win32/winrm/installation-and-configuration-for-windows-remote-management
