@@ -36,6 +36,7 @@ Get-Command | Where-Object { $_.parameters.keys -contains "ComputerName" -and $_
 #This uses the DCOM protocol (Above).  Pre-dates the new WinRM protocol
 
 # this will prompt you to enter your access credentials. the creds will be securely stored in the variable
+#admin P@ssw0rd or could specify a domain name ITNET\Admin and password
 $creds = Get-Credential
 
 $RemoteDevice = "Server22-02"
@@ -66,7 +67,7 @@ Enable-PSRemoting
 
 
 # check winrm settings
-winrm get winrm/config/client
+winrm get winrm/config/client      #Client is used to connect to other devices
 winrm get winrm/config/service
 
 
