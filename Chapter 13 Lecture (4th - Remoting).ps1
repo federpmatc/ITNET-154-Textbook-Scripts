@@ -39,14 +39,14 @@ $creds = Get-Credential
 #password is secure and can be sent over the wire
 
 # restart a single computer
-Restart-Computer -ComputerName W10-Client -Credential $creds -Confirm   #Disabling the WinRM service on client prevents this from working
+Restart-Computer -ComputerName Win11-Client -Credential $creds -Confirm   #Disabling the WinRM service on client prevents this from working
 
 # restart several computers
-Restart-Computer -ComputerName W10-Client, Server2019-2 -Credential $creds -Confirm
+Restart-Computer -ComputerName Win11-Client, Server22-02 -Credential $creds -Confirm
 
 # restart an entire list of computers
 New-Item -Path ~\listOfServers.txt
-Add-content -Path ~\listOfServers.txt "W10-Client", "Server2019-2"
+Add-content -Path ~\listOfServers.txt "Win11-Client", "Server22-02"
 Get-Content ~\listOfServers.txt
 $devices = Get-Content -Path ~\listOfServers.txt
 Restart-Computer -ComputerName $devices -Credential $Creds -Confirm
@@ -63,34 +63,34 @@ Test-WSMan
 Enable-PSRemoting
 
 # check winrm settings
-winrm get winrm/config/client
+winrm get winrm/config/client #return info on the client (used to access a service on remote system)
 winrm get winrm/config/service #admin priv.
 
 #verify that WinRM is setup and responding on a remote device
 #you must specify the authentication type when testing a remote device.
 #if you are unsure about the authentication, set it to Negotiate
 $credential = Get-Credential
-Test-WSMan  "W10-Client"
-Test-WSMan  "Server2019-2"
+Test-WSMan  "Win11-Client"
+Test-WSMan  "Server22-02"
 
 #verify local device is listening on WinRM port
 Get-NetTCPConnection -LocalPort 5985
 
 #verify a remote device is listening on WinRM port
 Test-NetConnection -Computername 192.168.222.101 -Port 5985
-Test-NetConnection -Computername W10-Client -Port 5985
+Test-NetConnection -Computername Win11-Client -Port 5985
 
 #establish an interactive remote session
 $credential = Get-Credential
-Enter-PSSession -ComputerName W10-Client -Credential $credential
+Enter-PSSession -ComputerName Win11-Client -Credential $credential
 
 #basic session opened to remote device
-$session = New-PSSession -ComputerName W10-Client -Credential itnet\admin
+$session = New-PSSession -ComputerName Win11-Client -Credential itnet\admin
 #session variable contains information about the active session we have with the remote machine
 
 #establish sessions to multiple devices
 $credential = Get-Credential
-$multiSession = New-PSSession -ComputerName W10-Client,Server2019-2 -Credential $credential
+$multiSession = New-PSSession -ComputerName Win11-Client,Server22-02 -Credential $credential
 
 #establish session to an entire list of devices
 $devices = Get-Content -Path C:\listOfServers.txt
