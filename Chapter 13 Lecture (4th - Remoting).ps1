@@ -115,6 +115,12 @@ Invoke-Command -Session $multiSession -ScriptBlock { HOSTNAME.EXE
 Invoke-Command -Session $multiSession -ScriptBlock { "$(HOSTNAME.EXE) has this many processors $((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors) "
 }
 
+#OR
+Invoke-Command -Session $multiSession -ScriptBlock { 
+   $result = "$((Get-CimInstance Win32_ComputerSystem).NumberOfLogicalProcessors) $env:computername"
+   return $result
+}
+
 #get the amount of RAM for each remote device
 Invoke-Command -Session $session -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { $_.sum / 1MB } }
 Invoke-Command -Session $multiSession -ScriptBlock { Get-CimInstance Win32_OperatingSystem | Measure-Object -Property TotalVisibleMemorySize -Sum | ForEach-Object { [int] ($_.sum / 1024 / 1024) } }
