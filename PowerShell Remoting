@@ -97,7 +97,8 @@ $credential = Get-Credential
 $multiSession = New-PSSession -ComputerName Server22-02, Win11-Client -Credential $credential
 
 
-Get-PSSession | Remove-PSSession
+Get-PSSession | Remove-PSSession #Close all sessions
+
 Get-PSSession
 #region Invoke-Command examples
 
