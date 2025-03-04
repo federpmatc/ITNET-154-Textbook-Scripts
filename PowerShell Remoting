@@ -33,6 +33,8 @@ get-command Restart-Computer | Select-Object Parameters
 # Per PowerShell documentation you can find a list of cmdlets that support ComputerName with the following:
 Get-Command | Where-Object { $_.parameters.keys -contains "ComputerName" -and $_.parameters.keys -notcontains "Session" }
 
+#This uses the DCOM protocol (Above).  Pre-dates the new WinRM protocol
+
 # this will prompt you to enter your access credentials. the creds will be securely stored in the variable
 $creds = Get-Credential
 
