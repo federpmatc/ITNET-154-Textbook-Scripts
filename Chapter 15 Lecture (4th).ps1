@@ -3,6 +3,23 @@
 
 #CIM commandlets are newer and provide better remoting capabilities
 
+######################################################################################
+#Some CIM cmdlets support -computername, however it's best to use InvokeCommand instead
+
+#Why Use Invoke-Command Instead of -ComputerName?
+#✅ 1. Better Performance (Persistent Sessions)
+#Invoke-Command allows you to establish a persistent session (New-PSSession), avoiding repeated authentication overhead.
+#-ComputerName creates a new connection every time you run Get-CimInstance, which is slower.
+
+#✅ 2. Works in PowerShell 7+
+#-ComputerName relies on WSMan/DCOM, which has limited support in PowerShell 7.
+#Invoke-Command works well in PowerShell Core and supports cross-platform remoting.
+
+#✅ 3. More Flexibility (Parallel Execution)
+#Invoke-Command allows running commands in parallel on multiple computers.
+#-ComputerName runs the command one machine at a time, which can be inefficient.
+######################################################################################
+
 Get-CimInstance Win32_logicaldisk -ComputerName "Server2019-1"
 Invoke-Command -ComputerName Server2019-1 -ScriptBlock {Get-CimInstance Win32_logicaldisk} 
 
