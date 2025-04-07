@@ -10,7 +10,7 @@ DNS Address
 .PARAMETER DFG
 Default Gateway Address
 .PARAMETER SubnetMask
-Subnetmask in bits (i.e. 255.255.255.0 shoudl be entered as 24)
+Subnetmask in bits (i.e. 255.255.255.0 should be entered as 24)
 .EXAMPLE
 set-ipaddr.ps1 -IPAddress 192.168.222.102 -Subnetmask 24 -DNSAddress 192.168.222.101 -DFG 192.168.222.201 
 #>
@@ -23,18 +23,19 @@ param (
         [Parameter(Mandatory=$True)][string]$IPAddress,
         [Parameter(Mandatory=$True)][string]$DNSAddress,
         [Parameter(Mandatory=$True)][string]$DFG,
-        [byte]$SubnetMask = 24
+        [byte]$SubnetMask = 24,
+        [Parameter(Mandatory=$True)][uint]$ifIndex
 )
 
 Write-Verbose "IP Address: $IPAddress"
 Write-Verbose "Subnet Mask: $subnetmask"
 Write-Verbose "DNS Address (Prefix Lengh): $DNSAddress"
 Write-Verbose "Default Gateway: $DFG"
-
-$ifIndex = Get-NetAdapter -Physical | Select-Object -ExpandProperty ifIndex
+Write-Verbose "Default Gateway: $ifIndex"
 
 #Remove IP address
-$interface = Get-NetAdapter -Physical | Get-NetIPInterface -AddressFamily "IPv4"
+$interface = Get-NetAdapter -InterfaceIndex $ifIndex | Get-NetIPInterface -AddressFamily "IPv4"
+
 If ($interface.Dhcp -eq "Disabled") {
  # Remove existing gateway
  If (($interface | Get-NetIPConfiguration).Ipv4DefaultGateway) { $interface | Remove-NetRoute -Confirm:$false }
