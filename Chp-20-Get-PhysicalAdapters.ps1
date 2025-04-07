@@ -19,7 +19,7 @@ param (
 )
 Write-Verbose "Connecting to $computername"
 
-Get-CimInstance win32_networkadapter -ComputerName localhost | Where-Object { $_.PhysicalAdapter } | 
+Get-CimInstance win32_networkadapter -ComputerName $Computername | Where-Object { $_.PhysicalAdapter } | 
 Select-Object MACAddress,AdapterType,DeviceID,Name,Speed
 
 Write-host "All done!!!!!"
