@@ -10,19 +10,35 @@ Get-Process | Where-Object {$_.Name -notlike 'W*'} |Sort-Object -Property CPU |S
 Get-Process -Name 'svchost'
 
 #Chapter 13
+#Windows Remote Management (WinRM) is Mircosoft's implementation of the WS-Management Protocol 
+Enter-PSSession -ComputerName Server22-01
 
-Enter-PSSession -ComputerName Server2019-1
 Exit-PSSession
 
-Invoke-Command -ComputerName Server2019-1 -ScriptBlock {Get-Service | Where-Object {$_.status -eq "Stopped"}}
+#Possible to use SSH (secure shell) as opposed to WinRM for connection negotation and data transport
+#SSH needs to be on the local machine and the remote system needs to have PowerShell SSH installed
+Enter-PSSession -HostName Server22-01
 
-Invoke-Command -ComputerName Server2019-1, W10-Client -ScriptBlock {get-process | 
-    sort-object -property VM | Select-Object -First 3}
+Invoke-command -ComputerName Server22-01 -ScriptBlock {
+    Get-Service | where-object status -eq stopped
+}
 
-New-Item -ItemType File -Path ~\computers.txt
-Add-Content -Path ~\computers.txt -Value "Server2019-1", "W10-Client"
-Get-Content -Path ~\Computers.txt
-Invoke-Command -ComputerName (Get-Content ~\computers.txt) -ScriptBlock {get-process | 
-    sort-object -property VM | Select-Object -First 3}
+$commands = {
+    Get-Service | where-object status -eq stopped
+}
 
-Invoke-Command -ComputerName Server2019-1, W10-Client -ScriptBlock {$PSVersionTable.PSVersion}
+Invoke-command -ComputerName Server22-01 -ScriptBlock $commands
+
+$commands = {Get-Process | Sort-Object -Property VirtualMemorySize -Descending | Select-Object -First 3}
+Invoke-command -ComputerName Server22-01 -ScriptBlock $commands
+
+New-Item -Path ~ -Name computers.txt -ItemType File
+Add-Content -Path ~\computers.txt -Value Server22-01
+Add-Content -Path ~\computers.txt -Value win11-client
+Get-Content -Path ~\computers.txt
+
+Invoke-command -ComputerName (Get-Content -Path ~\computers.txt) -ScriptBlock $commands
+
+$commands = {$PSVersionTable}
+Invoke-command -ComputerName (Get-Content -Path ~\computers.txt) -ScriptBlock $commands
+
