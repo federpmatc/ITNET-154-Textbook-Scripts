@@ -34,3 +34,30 @@ Add-Content -Path ~\labs\ZeroLengthFile -Value "Hello Again"
 Get-Content -path ~\labs\ZeroLengthFile
 Set-Location ~\labs
 notepad.exe .\ZeroLengthFile 
+
+#Chapter 6
+Set-Location "C:\~"
+New-Item -ItemType File -Name File1 -Value "Hello" -Force
+New-Item -ItemType File -Name File2 -Value "Hello Again" -Force
+diff -ReferenceObject (Get-Content file1) -DifferenceObject (Get-Content file2)
+Compare-Object -ReferenceObject (Get-Content file1) -DifferenceObject (Get-Content file2)
+
+get-service | Out-GridView
+
+Get-Service wuauserv | Stop-Service
+Stop-Service -Name "Windows Search"
+
+get-service | Out-GridView | export-csv srvcs.csv
+get-service |  export-csv srvcs.csv
+
+get-service |  export-csv srvcs.csv -Delimiter "|"
+
+get-service w* |  export-csv srvcs.csv -IncludeTypeInformation
+
+get-service w* |  export-csv srvcs.csv -IncludeTypeInformation -NoClobber
+
+get-service w* |  export-csv srvcs.csv -IncludeTypeInformation -NoClobber -UseCulture
+
+
+
+
