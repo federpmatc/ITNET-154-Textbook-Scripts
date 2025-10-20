@@ -10,8 +10,6 @@ Get-ChildItem env:
 Get-Item  -Path ~
 Get-Item  -path $env:userprofile
 
-Get-ChildItem -Path C:\Users\feder\Downloads
-Get-ChildItem -Path $env:USERPROFILE\downloads
 Get-ChildItem ~\Downloads
 
 $DownloadedFile = (Get-ChildItem ~\Downloads\ | Sort-Object LastWriteTime | Select-Object -last 1).FullName
@@ -28,7 +26,8 @@ $Checksum = Read-Host -Prompt “Please enter the known-good checksum from the d
         $Hash = “SHA256”
     }
     else {
-        #Creating a terminating error
+        #Throw - Terminates Execution: Throw halts the current execution flow. 
+        #No further statements will be processed after a throw statement.
         Throw Read-Host “The only supported hash algorithms at this time are SHA256, SHA1, and MD5. Press Enter to exit”
     }
 
