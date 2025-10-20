@@ -13,6 +13,7 @@ Get-Item  -path $env:userprofile
 Get-ChildItem ~\Downloads
 
 $DownloadedFile = (Get-ChildItem ~\Downloads\ | Sort-Object LastWriteTime | Select-Object -last 1).FullName
+Write-Host "The download source is: $DownloadedFile"
 
 $Checksum = Read-Host -Prompt “Please enter the known-good checksum from the download source”
 
