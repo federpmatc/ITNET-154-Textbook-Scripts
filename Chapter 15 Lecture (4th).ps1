@@ -62,9 +62,18 @@ Measure-Command {
 
 
 #Question #1
-Get-ChildItem | Get-Member
+#You should see a method called delete
+Get-ChildItem | Get-Member -MemberType Method
+
+#Create two folders and then use the method to delete them
+New-Item -ItemType Directory ~\DelMePlease1
+New-Item -ItemType Directory ~\DelMePlease2
+
+Get-Item -Path ~\DelMePlease*
+Get-Item -Path ~\DelMePlease* | foreach-object {$_.Delete()}
 
 #Question #2
+#you should see a Kill method
 Get-Process | gm | Where-Object MemberType -eq Method
 Get-Process | gm -MemberType Property
 
@@ -73,11 +82,16 @@ New-Item -ItemType File "patdeleteme.txt"
 New-Item -ItemType File "patReallydeleteme.txt"
 New-Item -ItemType Directory "patsdeletemeDirectory"
 Get-ChildItem *deleteme* |gm -MemberType method
-Get-ChildItem *deleteme* | Remove-Item 
-Get-ChildItem *deleteme* | ForEach-Object -parallel {$_.Delete()}
+#this is the preferred way to do it
 Get-ChildItem *deleteme* | Remove-Item
+#This is an alternate way (using the delete method) 
+Get-ChildItem *deleteme* | ForEach-Object -parallel {$_.Delete()}
+
 
 
 #Question #4
-get-content computers.xt | foreach-object {$_.ToUpper()}
-Get-ChildItem *deleteme* |ForEach-Object {$_.name.ToUpper()}
+"Server22-01","Server22-02", "Win11-Client"
+"Server22-01","Server22-02", "Win11-Client" | foreach-object {$_.ToUpper()}
+
+#An example of the concepts shown above
+Get-ChildItem -Path ~ |ForEach-Object {$_.name.ToUpper()}
