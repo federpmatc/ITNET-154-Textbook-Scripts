@@ -2,18 +2,17 @@
 start-job {Get-ChildItem c:\users  *.ps1 -Recurse}
 
 Get-Job
-Receive-Job -Id 11
+#make sure to change the job id below as needed
+Receive-Job -Id 7
+
 Get-Volume | Select-Object driveletter,size
-#Doesn't return the PSComputerName property
-start-job  -ComputerName server2019-1, W10-Client {
-    Get-Volume | Select-Object driveletter,size
- }
 
  #PSComputerName
- Invoke-Command -ComputerName Server2019-1,W10-Client {
+ Invoke-Command -ComputerName Server22-01,Win11-Client {
     Get-Volume | Select-Object driveletter,size, PSComputerName
  } -AsJob
+
  Get-Job | Select-Object *| Out-GridView
- Receive-Job -id 25 -Keep
+ Receive-Job -id 20 -Keep
 
  Get-Job | Remove-Job
