@@ -19,9 +19,9 @@
 #Invoke-Command allows running commands in parallel on multiple computers.
 #-ComputerName runs the command one machine at a time, which can be inefficient.
 ######################################################################################
-
-Get-CimInstance Win32_logicaldisk -ComputerName "Server2019-1"
-Invoke-Command -ComputerName Server2019-1 -ScriptBlock {Get-CimInstance Win32_logicaldisk} 
+Get-CimInstance Win32_logicaldisk
+Get-CimInstance Win32_logicaldisk -ComputerName "Server22-01"
+Invoke-Command -ComputerName Server22-01 -ScriptBlock {Get-CimInstance Win32_logicaldisk} 
 
 #Install WMI Explorer download Easy to show NameSpace, Class, Instance, Property
 #Checkout Win32 LogicalDisk
@@ -49,7 +49,7 @@ Get-ciminstance win32_service | Where-Object state -ne ‘Running’
 Get-CimInstance win32_service | Where-Object {($_.state -eq 'Running') -and ($_.status -eq 'OK')}
 Get-CimInstance win32_service -Filter "state = 'Running' and status='OK'" -ComputerName Server2019-1
 
-Get-Service | Where-Object state -eq 'Running'
+Get-Service | Where-Object status -eq 'Running'
 
 #-Parallel runs up to 5 script blocks in parallel
 Measure-Command {
@@ -59,7 +59,14 @@ Measure-Command {
 }
 }
 
-
+#-Execute syncronously
+Measure-Command {
+    1..15 | ForEach-Object  {
+        Write-Host $_
+        sleep -Seconds 1
+    }
+    }
+    
 
 #Question #1
 #You should see a method called delete
