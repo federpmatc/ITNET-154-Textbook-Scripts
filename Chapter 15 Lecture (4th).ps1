@@ -88,6 +88,7 @@ Get-Process | gm -MemberType Property
 New-Item -ItemType File "patdeleteme.txt"
 New-Item -ItemType File "patReallydeleteme.txt"
 New-Item -ItemType Directory "patsdeletemeDirectory"
+Get-ChildItem *deleteme* 
 Get-ChildItem *deleteme* |gm -MemberType method
 #this is the preferred way to do it
 Get-ChildItem *deleteme* | Remove-Item
