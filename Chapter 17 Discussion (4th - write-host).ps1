@@ -9,26 +9,29 @@
 #This enables the capture or suppression of data written using Write-Host while preserving backwards compatibility.
 Write-Host "Hello World" -ForegroundColor Blue -BackgroundColor Yellow #write host writes directly to hosting application, so we have more control
 Write-Output "Hello World"   #write-output sends info to pipeline (no optiopns for formatting)
-"hello world"
+"hello world" #Same as line above
 
 #PowerShell has a few otherways to produce output
+$InformationPreference
 $InformationPreference = 'continue' #configuration variable
 Write-Information "Hello World"  #write to information stream
 
 #When events occur (like errors, they are sent to the approriate stream)
 $ErrorActionPreference = 'continue'  #Configuration variables control what happens
 Write-Error "Hello World"  #write to Error stream
+jfhsdgjfdfsdjhgdsjhgfsdj   #We will see the error stream output
 
 $ErrorActionPreference = 'SilentlyContinue'  #Configuration variables control what happens
-Write-Error "Hello World"  #write to Error stream
+Write-Error "Hello World"  #write to Error stream, however, nothing is seen on the console
+jfhsdgjfdfsdjhgdsjhgfsdj   #We will not see the error stream output
 
 #The Write-Verbose cmdlet writes text to the verbose message stream in PowerShell. 
 #The verbose message stream is used to deliver more in depth information about command processing.
 #By default, the verbose message stream is not displayed, but you can display it by changing the value of the $VerbosePreference variable or using the Verbose common parameter in any command.
 
 $VerbosePreference = 'SilentlyContinue'
-Write-Verbose "line 15"  #write to Error stream
-
+$VerbosePreference = 'Continue'
+Write-Verbose "line 15"  #write to Verbose stream
 
 #More fun with the pipeline!
 $a = get-process  | Write-Output
