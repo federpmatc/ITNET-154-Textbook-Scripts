@@ -4,7 +4,7 @@ Get-PSDrive | ?{$_.Free -gt 1} |
 {Write-Host"";Write-Host "Total Free Space " ("{0:N2}" -f ($Count/1gb)) -backgroundcolor magenta}
 
 #I removed write-host (below) to just get string objects in the pipeline
-$computername = "Server2019-1","W10-Client"
+$computername = "Server22-01","Win11-Client"
 Invoke-Command -ComputerName $computername -ScriptBlock {
     Get-PSDrive | ?{$_.Free -gt 1} | 
     %{$Count = 0; Write-Host "";} `
@@ -15,7 +15,7 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
 
 #Paramterized Script
 param (
-    $computername = "Server2019-1",
+    $computername = "Server22-01",
     $name = "Pat"
 )
 "....................$(Get-Date) Hey $name Checking the disk space on $computername  ..............................."
@@ -43,7 +43,7 @@ Using parameter
 .EXAMPLE
 Get-DiskInventory -computername SERVER-R2 -name Pat
 .EXAMPLE
-Get-DiskInventory W10-CLient Pat
+Get-DiskInventory Win11-Client Pat
 #>
 
 <#
@@ -64,3 +64,4 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     
     "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
 }
+
