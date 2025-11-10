@@ -28,7 +28,7 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
 }
 
-
+#Documenting our script with help that mimics PowerShell's help files
 
 <#
 .SYNOPSIS
@@ -67,3 +67,4 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     }
     "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
 }
+
