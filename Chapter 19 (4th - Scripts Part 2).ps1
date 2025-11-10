@@ -6,11 +6,14 @@ ForEach-Object `
 
 #I removed write-host (below) to just get string objects in the pipeline
 $computername = "Server22-01","Win11-Client"
+$Count = 0GB
+Write-Output ""
 Invoke-Command -ComputerName $computername -ScriptBlock {
     Get-PSDrive | Where-Object{$_.Free -gt 1} | 
-    ForEach-Object{$Count = 0; Write-Host "";} `
-    { "$env:COMPUTERNAME $($_.Name): Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;}`
-    
+    ForEach-Object {
+        "$env:COMPUTERNAME $($_.Name): Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)) 
+        $Count = $Count + $_.Free;
+    }
     "Total Free Space $([int]($Count / 1gb))GB"
 }
 
@@ -21,13 +24,16 @@ param (
 )
 "....................$(Get-Date) Hey $name Checking the disk space on $computername  ..............................."
 Invoke-Command -ComputerName $computername -ScriptBlock {
-    Get-PSDrive | ?{$_.Free -gt 1} | 
-    %{$Count = 0; Write-Host "";} `
-    { $_.Name + ": Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;}`
+    $Count = 0GB
+    Write-Output ""
+    Get-PSDrive | Where-Object{$_.Free -gt 1} | 
+    ForEach-Object { 
+        $_.Name + ": Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb))
+        $Count = $Count + $_.Free
+    }
     
-    "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
+    write-output "### $env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB ###"
 }
-
 #Documenting our script with help that mimics PowerShell's help files
 
 <#
@@ -67,4 +73,5 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     }
     "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
 }
+
 
