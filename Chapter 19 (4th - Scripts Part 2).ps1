@@ -1,8 +1,15 @@
+$Count = 0; Write-Host "";
 Get-PSDrive | Where-Object{($_.Free -gt 1) -and ($_.Name.Length -eq 1)} | 
-ForEach-Object `
-{$Count = 0; Write-Host "";} `
-{ $_.Name + ": Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;}`
-{Write-Host"";Write-Host "Total Free Space " ("{0:N2}" -f ($Count/1gb)) -backgroundcolor magenta}
+ForEach-Object { 
+        $used = $_.Used/1gb
+        $free = $_.free/1gb
+        $total = $used + $free
+        $DiskName = $_.name
+        write-host ("$DiskName : Used {0:N2} Free: {1:N2} Total: {2:N2}" -f $used, $free, $total) -BackgroundColor Yellow
+        $Count = $Count + $free
+}
+Write-Host ""
+Write-Host ("Total Free Space {0:N0}" -f $Count) -backgroundcolor magenta
 
 #I removed write-host (below) to just get string objects in the pipeline
 $computername = "Server22-01","Win11-Client"
@@ -10,12 +17,16 @@ $Count = 0GB
 Write-Output ""
 Invoke-Command -ComputerName $computername -ScriptBlock {
     Get-PSDrive | Where-Object{$_.Free -gt 1} | 
-    ForEach-Object {
-        "$env:COMPUTERNAME $($_.Name): Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)) 
-        $Count = $Count + $_.Free;
-    }
-    "Total Free Space $([int]($Count / 1gb))GB"
+    ForEach-Object { 
+        $used = $_.Used/1gb
+        $free = $_.free/1gb
+        $total = $used + $free
+        $DiskName = $_.name
+        write-host ("$DiskName : Used {0:N2} Free: {1:N2} Total: {2:N2}" -f $used, $free, $total) -BackgroundColor Yellow
+        $Count = $Count + $free
 }
+Write-Host ""
+Write-Host ("Total Free Space {0:N0}" -f $Count) -backgroundcolor magenta
 
 #Paramterized Script
 param (
@@ -28,12 +39,18 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     Write-Output ""
     Get-PSDrive | Where-Object{$_.Free -gt 1} | 
     ForEach-Object { 
-        $_.Name + ": Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb))
-        $Count = $Count + $_.Free
+        $used = $_.Used/1gb
+        $free = $_.free/1gb
+        $total = $used + $free
+        $DiskName = $_.name
+        write-host ("$DiskName : Used {0:N2} Free: {1:N2} Total: {2:N2}" -f $used, $free, $total) -BackgroundColor Yellow
+        $Count = $Count + $free
     }
     
-    write-output "### $env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB ###"
+    write-host ("### $env:COMPUTERNAME Total Free Space {0:N0}GB ###" -f $count) -BackgroundColor Yellow
+    write-host ("`n") -BackgroundColor Black
 }
+
 #Documenting our script with help that mimics PowerShell's help files
 
 <#
@@ -67,11 +84,18 @@ Invoke-Command -ComputerName $computername -ScriptBlock {
     $count = 0GB
     write-output ""
     Get-PSDrive | Where-Object{$_.Free -gt 1} | 
-    ForEach-Object {
-        "$env:COMPUTERNAME $($_.Name): Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;
-        #"$env:COMPUTERNAME $($_.Name): Used: " + "{0:N2}" -f ($_.Used/1gb) + " Free: " + "{0:N2}" -f ($_.free/1gb) + " Total: " + "{0:N2}" -f (($_.Used/1gb)+($_.Free/1gb)); $Count = $Count + $_.Free;
+    ForEach-Object { 
+        $used = $_.Used/1gb
+        $free = $_.free/1gb
+        $total = $used + $free
+        $DiskName = $_.name
+        write-host ("$DiskName : Used {0:N2} Free: {1:N2} Total: {2:N2}" -f $used, $free, $total) -BackgroundColor Yellow
+        $Count = $Count + $free
     }
-    "$env:COMPUTERNAME Total Free Space $([int]($Count / 1gb))GB"
+    
+    write-host ("### $env:COMPUTERNAME Total Free Space {0:N0}GB ###" -f $count) -BackgroundColor Yellow
+    write-host ("`n") -BackgroundColor Black
+}
 }
 
 
