@@ -5,32 +5,34 @@ Get-PSDrive
 
 #CmdLets to see and manipulate the data in a PSDrive include an ‘item’ noun)
 Get-Item Alias:
-Get-Item /   #refers to the object
-#On macOS and Linux we don't have drive letters.  The entire FS is mapped to  /
-Get-ChildItem / #refers to the items within the object
+
+Get-Item ~  #refers to the object
+Get-ChildItem ~ #refers to the items within the object
 
 #Most items have properties, just like files and folders have properties
-Get-ItemProperty /Users  #Items have properties
-Get-ItemProperty /Users  | select *
+Get-ItemProperty C:/Users  #Items have properties
+Get-ItemProperty C:/Users  | Select-Object *
 
 New-Item -ItemType Directory -Name labs -Path ~
 New-item -ItemType File -Name labs\test.txt -Path ~
 
-Set-Item -Path labs\test.txt -Value "hello"  #not supported on mac
+Set-Content -Path ~/labs/test.txt -Value "hello"  -force 
 Add-Content -Path  ~/labs/test.txt -Value "hello"
 Get-Content -Path ~/labs/test.txt
 
-Get-Item Env:/PSModulePath
-Get-Item Env:/PSModulePath | select *
+Get-Item Env:/PSModulePath 
+Get-Item Env:/PSModulePath | Select-Object *
+(Get-Item Env:/PSModulePath).Value -split ';'
 
-Get-ChildItem -Path ~/Downloads -Filter *.msi #seems to be the best
-Get-ChildItem -Path ~/Downloads/* -Include *.txt,*.pdf,*.msi  #include supports multiple conditions
-Get-ChildItem -Path ~/Downloads/* -Exclude *.msi  -Filter T*
+Get-ChildItem -Path ~/Downloads -Filter *.xls #seems to be the best
+Get-ChildItem -Path ~/Downloads/* -Include *.exe,*.csv,*.msi  #include supports multiple conditions
+Get-ChildItem -Path ~/Downloads/* -Exclude *.exe  -Filter g*
 
 Set-Location HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 get-item -Path  Advanced
-Set-ItemProperty -path Advanced -PSProperty DontPrettyPath -Value 1
+Set-ItemProperty -path Advanced -Name DontPrettyPath -Value 1
 Get-ItemProperty -path Advanced -Name DontPrettyPath
+
 #The Power of using the | in PowerShell - TS
 Get-Service
 #If you wanted just the names to be displayed, it would be very difficult in many environments
@@ -45,7 +47,7 @@ Get-Service | Where-Object status -EQ "Running" |Select-Object "DisplayName" | M
 
 #Export  
 Get-Process | Sort-Object -Property CPU -Descending | #end with a pipe it will pickup next line
-Select-Object -First 3 | Export-Csv ~\process.csv   #property values become column headings
+Select-Object -First 3 | Export-Csv "~\process.csv"   #property values become column headings
 
 get-aduser -Filter *
 #Create several domain admins first if necessary
@@ -65,7 +67,7 @@ New-ADUser `
 -SamAccountName Admin2 `
 -UserPrincipalName ("Admin2@ITNET.pri")
 
-#Add Admin1 & Admin2 to Admin Groups
+# Add Admin1 & Admin2 to Admin Groups
 Add-ADGroupMember -Identity 'Domain Admins' -Members 'Admin1','Admin2'
 Get-ADUser -Filter { Name -like "*Admin*" }
 
@@ -129,6 +131,10 @@ $env:path
 $env:Path -split ';'
 $env:path = $env:path + ';C:\Scripts'
 
+get-psdrive
+get-item env:path
+(get-item Env:/Path).value -split ';'
+
 #about_profiles
 #The PowerShell profile is a script that runs every time you start PowerShell.
 
@@ -138,6 +144,5 @@ Add-Content -path $PROFILE -value 'write-host "Welcome to Pats PowerShell!"'
 
 Get-Content $PROFILE
 notepad.exe $PROFILE
-
 
 
