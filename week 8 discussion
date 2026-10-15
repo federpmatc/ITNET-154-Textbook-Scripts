@@ -1,0 +1,116 @@
+#https://docs.google.com/document/d/1p0yG8tFKQQHXvj6FuvwlORqHZaliuM70ji7YysRNuro/edit?usp=sharing 
+#contains weeks 7 & 8
+
+#Variables
+$var = 'hello'
+$number = 1
+$numbers = 1,2,3,4,5,6,7,8,9
+$services=get-service
+$numbers[1]
+$services[1]
+
+#Parentheses
+(get-service)[130]
+
+#Quotes
+$name = 'Pat'
+write-host "My name is $name"
+write-host ‘My name is $name’
+
+write-host "name='BITS'"
+$computer = 'BITS'
+write-host "name='$computer'"
+
+#Subexpression operator (within in a string)
+$computer.Length
+write-host "the string length is $($computer.Length)"
+
+$name = 'Pat'
+$age = 59
+#Print these out
+#What types are they
+
+#GB, MB, KB are buitin mulltipliers
+$memory = 1GB
+write-host "$memory"
+
+
+#Hash Tables
+$PSVersionTable #Read Only Variable
+$psversiontable | gm
+
+
+#Key/Value
+$PSVersionTable.keys
+$PSVersionTable.PSVersion
+
+
+# Empty hashtable $emptyHash = @{}
+# Inline hashtable with elements
+$user = @{
+    Name = "Alice"
+    Age  = 30
+    Role = "Admin"
+}
+
+
+# Multi-line hashtable (semicolons optional here)
+$config = @{
+    Server  = "Localhost"
+    Port    = 8080
+    Enabled = $true
+}
+
+
+$length = 1MB
+$one_more = @{Name = "Size(MB)"; Expression = $Length / 1Kb }
+$one_more.values
+$one_more
+
+
+
+
+1..10 | ForEach-Object{new-item -type File -Path "~\downloads" -name "$_.csv" -force}
+
+
+#Variable, Methods, Properties
+
+
+#Access .NET core content, which contains massive library
+#the code below creates a file object based on the [System.IO.File] class, using the Create method
+
+
+#System uptime ([Environment]::TickCount is a property) and [System.TimeSpan]::FromMilliseconds is a method of System.TimeSpan class
+[Environment]::TickCount
+$uptime = [Environment]::TickCount
+[System.TimeSpan]::FromMilliseconds($uptime)
+
+
+#Create a file
+$file = [System.IO.File]::Create($(".\downloads\PatFeder.pdf"))
+$file.SetLength(10MB) # Supports KB, MB, GB, etc.
+$file.Close()
+
+
+1..10 | ForEach-Object{$_}
+
+
+Set-Location ~
+1..10 | ForEach-Object{
+    $file = [System.IO.File]::Create($(".\downloads\Test-$_.pdf"))
+    $file.SetLength(10MB) # Supports KB, MB, GB, etc.
+    $file.Close()
+}
+
+
+1..10 | Where-Object {$_ -ge 5}
+
+
+Get-ChildItem -Path ~/downloads -File |Get-Member
+Get-ChildItem -Path ~/downloads -File | Select-Object -Property Name
+
+
+Get-ChildItem -Path ~/downloads -File |
+  Where-Object { $_.LastWriteTime -ge (Get-Date).AddDays(-7) } |
+  Select-Object -Property Name, @{Name="Size(MB)";Expression={[int]($_.Length / 1MB)}} |
+  export-csv -Path test.csv
