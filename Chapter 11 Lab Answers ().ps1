@@ -1,4 +1,4 @@
-﻿#Chapter 11 - 4th edition
+#Chapter 11 - 4th edition
 
 gsv | ft #columns & rows
 gsv | ft -Wrap 
@@ -51,21 +51,21 @@ Get-Module| Format-Table @{l='ModuleName';e={$_.Name }},
 
 <#5 Display a four-column-wide list of all directories in the home directory.
 #>
-gci ~ | fw -Column 4
+gci ~ | fw -propery name -Column 4
 
 <#6 Create a formatted list of all .dll files in $pshome, displaying the name, version
 information, and file size. PowerShell uses the Length property, but to make it
 clearer, your output should show Size. 
+$PSHOME automatic variable contains the full file path to the installation directory of the currently running PowerShell session
 #>
-gci $pshome/*.dll |
+gci $pshome/*.dll | select-object -First 3 |
 Format-List Name,VersionInfo,@{Name="Size";Expression={$_.length}}
 
-gci $pshome/*.dll |
-FT Name,VersionInfo,@{Name="Size";Expression={$_.length}}
+gci $pshome/*.dll |  select-object -First 3 |
+FT Name,@{Name="Size";Expression={$_.length}},VersionInfo 
 
 gci $pshome/*.dll |
 Select-Object Name,VersionInfo,@{Name="Size";Expression={$_.length}} | Out-GridView
-
 
 
 
