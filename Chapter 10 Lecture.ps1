@@ -19,6 +19,7 @@ get-content ~\computers.txt | gm  #we see that the output object is a string
 
 help get-service -full #-Name parameter is used to specify a service name
 
+#ByValue  (i.e. string objects)
 get-content ~\computers.txt | Restart-Computer -Confirm  -force #Computer Name
 get-content ~\computers.txt | Test-Connection   #target name
 
@@ -29,6 +30,7 @@ Test-Connection -TargetName (get-content ~\computers.txt)
 
 
 #Example - Converting Object Property to a string
+get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | select-object -expand name |  Test-Connection
 Test-Connection -targetname ( get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | select-object -expand name )
 
 #Example
@@ -36,9 +38,9 @@ $computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pr
 $computers | gm
 $computers | Test-Connection #ByValue
 
-$computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | Select-Object  @{n='ComputerName';e={$_.name}}
+$computers = get-adcomputer -filter * -SearchBase "CN=computers, dc=itnet, dc=pri" | Select-Object  @{n='TargetName';e={$_.name}}
 $computers | gm
-$computers | Test-Connection #ByProperty
+$computers | Test-Connection #ByPropertyName
 
 #ByPropertyName
 get-adcomputer -filter * -SearchBase "CN=Computers, dc=ITNET, dc=pri"
