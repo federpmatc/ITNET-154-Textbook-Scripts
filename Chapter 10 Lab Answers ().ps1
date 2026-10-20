@@ -5,6 +5,8 @@ Get-Hotfix -computerName (get-adcomputer -filter {name -like '*Server*'} | Selec
 
 
 #Q2
+#By Value == By Object
+#By PropertyName == actual property name on incoming objects
 get-adcomputer -filter {name -like '*Server*' } | Get-Hotfix
 
 #Pipe Input by property name
@@ -17,21 +19,44 @@ get-adcomputer -filter {name -like '*Server*' } | select-object *, @{n='computer
 get-adcomputer -filter {name -like '*Server*' } | select-object * -ExpandProperty name  | Get-Hotfix
 
 #Q3
-get-adcomputer -filter  {name -like 'Server2019*' }  | ForEach-Object {Get-HotFix -ComputerName $_.name}
+get-adcomputer -filter  {name -like 'Server22*' }  | ForEach-Object {Get-HotFix -ComputerName $_.name}
 
 #Q4
-$names = get-adcomputer -filter  {name -like 'Server2019*' } | Select-Object -expandproperty name
+$names = get-adcomputer -filter  {name -like 'Server22*' } | Select-Object -expandproperty name
+write-host "$names"
 Get-HotFix -ComputerName $names
 
 
 #Q5
-
 Test-Connection -computername (get-adcomputer -filter {name -like '*Server*'} | Select-Object -expand name)
 
 #region Q6
 #I found the following online to delete all users with a name property that begins with 'User'
 #This will delete all users
-get-aduser -Filter "name -like 'user*'" | Remove-ADUser -Confirm:$false
+# Define the domain and user list
+$Domain = "itnet.pri"
+$Users = @("user1", "user2", "user3")
+
+# Loop through each user and create them in Active Directory
+foreach ($User in $Users) {
+    # Generate the User Principal Name (UPN)
+    $UPN = "$User\$Domain"
+    
+    # Set a temporary password (change this to a secure password)
+    $SecurePassword = ConvertTo-SecureString "P@ssw0rd" -AsPlainText -Force
+
+    # Create the AD User
+    New-ADUser -Name $User `
+               -SamAccountName $User `
+               -UserPrincipalName $UPN `
+               -AccountPassword $SecurePassword `
+               -Enabled $true `
+               -ChangePasswordAtLogon $false
+
+    Write-Host "Successfully created user: User $UPN" -ForegroundColor Green
+}
+
+get-aduser -Filter "name -like 'user*'" | Remove-ADUser -Confirm 
 
 #This .csv file was used in Chapter 9, question 6
 New-Item -ItemType File -Name Chp10Q6.csv -Path ~
@@ -40,20 +65,19 @@ Add-Content -Path ~/Chp10Q6.csv -Value "User1,MATC,Milwaukee,Student"
 Add-Content -Path ~/Chp10Q6.csv -Value "User2,MATC,Hartland,Instructor"
 Add-Content -Path ~/Chp10Q6.csv -Value "User3,MATC,Waukesha,Admin"
 
-notepad.exe .\Chp10Q6.csv
-Get-content .\Chp10Q6.csv
+notepad.exe ~\Chp10Q6.csv
+Get-content ~\Chp10Q6.csv
 
 #this will output the contents of the .csv as 3 objects
 #each object contains the folloing properties - name, company, city, title
-Import-Csv .\Chp10Q6.csv
+Import-Csv ~\Chp10Q6.csv
 
 #The following 3 lines are a single command.  The last character
 #on each line is a '|' so PowerShell knows that the command continues
 #on the following line
 #The following creates three users 
-Import-Csv C:\users\Admin\Chp10Q6.csv |
-Select-Object name, company, city, title, @{n='samAccountName'; e={$_.Name}}|
-New-ADUser
+Import-Csv ~\Chp10Q6.csv |
+Select-Object name, company, city, title, @{n='samAccountName'; e={$_.Name}}| New-ADUser
 
 #Display all users with a name propert that begins with 'User'
 get-aduser -Filter "name -like 'user*'"
