@@ -12,7 +12,11 @@ Write-Output "Hello World"   #write-output sends info to pipeline (no optiopns f
 "hello world" #Same as line above
 
 #PowerShell has a few otherways to produce output
+#We can include write-information in a script and not mess up the pipeline
+#Write-Host essentially forces data into the info stream
 $InformationPreference
+Write-Information "Hello World"  #write to information stream
+
 $InformationPreference = 'continue' #configuration variable
 Write-Information "Hello World"  #write to information stream
 
@@ -20,6 +24,7 @@ Write-Information "Hello World"  #write to information stream
 $ErrorActionPreference = 'continue'  #Configuration variables control what happens
 Write-Error "Hello World"  #write to Error stream
 jfhsdgjfdfsdjhgdsjhgfsdj   #We will see the error stream output
+$error   #error stream also goes to the $error variable
 
 $ErrorActionPreference = 'SilentlyContinue'  #Configuration variables control what happens
 Write-Error "Hello World"  #write to Error stream, however, nothing is seen on the console
@@ -32,6 +37,8 @@ jfhsdgjfdfsdjhgdsjhgfsdj   #We will not see the error stream output
 $VerbosePreference = 'SilentlyContinue'
 $VerbosePreference = 'Continue'
 Write-Verbose "line 15"  #write to Verbose stream
+
+
 
 #More fun with the pipeline!
 $a = get-process  | Write-Output
@@ -51,3 +58,7 @@ get-process | tee-object -filepath ~\fileA.txt | out-file ~\fileB.txt
 
 get-process  | tee-object -variable proc | select-object processname,handles
 $proc
+
+# Redirect Errors (2) AND Warnings (3) to Success (1)
+$WarningPreference = 'Continue'
+Write-Warning "Caution!" 2>&1 3>&1
