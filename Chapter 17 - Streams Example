@@ -12,10 +12,14 @@ param ()
 # ---------------------------------------------------------------------------
 # 1. SUCCESS STREAM (Stream 1)
 # Purpose: Primary output for successful results/data. Passed down the pipeline.
-# Cmdlet: Write-Output (or default unassigned values); gci - return file sys and directory sys objects
-# Cmdlet: 
+# Cmdlets: 
+# Write-Output (or default unassigned values); gci - return file sys and directory sys objects
 # 1>$null silences the success stream; only errors are printed to the console
-# Get-ChildItem -Path ~, ~/temptemp 1>$null   
+# Get-ChildItem -Path ~, ~/temptemp 1>$null  
+# Success Stream goes into a var and the error stream is displayed still
+# $SStream = Get-ChildItem -Path ~, ~/temptemp  
+# $SStream = Get-ChildItem -Path ~, ~/temptemp -ErrorAction SilentlyContinue #suppresses seeing the error stream
+# $error #the errors are still stored into the $error variable
 
 # ---------------------------------------------------------------------------
 $oilLevel = 5.2 # quarts
