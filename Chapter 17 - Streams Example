@@ -12,7 +12,7 @@ param ()
 # ---------------------------------------------------------------------------
 # 1. SUCCESS STREAM (Stream 1)
 # Purpose: Primary output for successful results/data. Passed down the pipeline.
-# Cmdlet: Write-Output (or default unassigned values)
+# Cmdlet: Write-Output (or default unassigned values); gci - return file sys and directory sys objects
 # ---------------------------------------------------------------------------
 $oilLevel = 5.2 # quarts
 $recommended = 5.0
