@@ -70,6 +70,10 @@ Write-Host "Refer to the debug output for detailed diagnostics."
 # 6. INFORMATION STREAM (Stream 6)
 # Purpose: Informational messages targeted at the end user; captureable and redirectable.
 # Cmdlet: Write-Information (Controlled by $InformationPreference or -InformationAction)
+# The key difference comes down to stream redirection and intent: 
+# Write-Host prints output strictly to the display host
+# Write-Information sends messages to PowerShell’s Information Stream (Stream 6), allowing them to be captured, redirected, or silenced programmatically.
+
 # ---------------------------------------------------------------------------
 Write-Information "Starting full system diagnostics..."
 Start-Sleep -Seconds 1
@@ -120,6 +124,7 @@ EXECUTION EXAMPLES & USAGE GUIDELINES
 
 4. Display User Information (Information Stream 6):
    .\CarDiagnostics.ps1 -InformationAction Continue
+   - Note: Silently Continue by default (requires $InformationPreference = 'Continue' or -InformationAction).
    - Unlocks structured status updates (e.g., ✔ Engine scan complete.).
 
 5. Combine All Troubleshooting Streams:
@@ -129,5 +134,9 @@ EXECUTION EXAMPLES & USAGE GUIDELINES
 6. Suppress Visual Pop-ups and Warnings:
    .\CarDiagnostics.ps1 -WarningAction SilentlyContinue -ProgressAction SilentlyContinue
    - Hides Warning (Stream 3) and Progress (Stream 7); useful for automated background jobs.
+
+Note: Quick Rule of Thumb
+  - If you want to force colorful text onto the screen right now, use Write-Host.
+  - If you are building a reusable script/module where callers might want to suppress or log status updates, use Write-Information.
 =============================================================================
 #>
