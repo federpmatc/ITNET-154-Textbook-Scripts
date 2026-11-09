@@ -1,0 +1,133 @@
+<#
+.SYNOPSIS
+    Combined PowerShell output stream demonstration script.
+.DESCRIPTION
+    PowerShell features seven distinct output streams, each serving a specific 
+    communication purpose between scripts, users, and the host environment.
+#>
+
+[CmdletBinding()]
+param ()
+#https://www.dearing.dev/posts/Under-the-Hood-PowerShell's-Output-Streams/
+# ---------------------------------------------------------------------------
+# 1. SUCCESS STREAM (Stream 1)
+# Purpose: Primary output for successful results/data. Passed down the pipeline.
+# Cmdlet: Write-Output (or default unassigned values)
+# ---------------------------------------------------------------------------
+$oilLevel = 5.2 # quarts
+$recommended = 5.0
+if ($oilLevel -ge $recommended) {
+    "Oil level is sufficient: $oilLevel quarts"
+}
+
+# ---------------------------------------------------------------------------
+# 2. ERROR STREAM (Stream 2)
+# Purpose: Reports non-terminating errors (issues that should be logged/shown 
+#          without immediately crashing the entire script). Added to $Error.
+# Cmdlet: Write-Error
+# ---------------------------------------------------------------------------
+$batteryVoltage = 11.0
+if ($batteryVoltage -lt 12.0) {
+    Write-Error "Battery voltage critically low: $batteryVoltage V. Replace or recharge immediately."
+}
+
+# ---------------------------------------------------------------------------
+# 3. WARNING STREAM (Stream 3)
+# Purpose: Alerts users to non-fatal conditions that warrant attention.
+# Cmdlet: Write-Warning (Controlled by $WarningPreference)
+# ---------------------------------------------------------------------------
+$tirePressure = 28 # PSI (low)
+if ($tirePressure -lt 30) {
+    Write-Warning "Low tire pressure. Inflate tires to optimal pressure."
+}
+Write-Host "Continuing diagnostics..." # Note: Write-Host writes to console/host directly
+
+# ---------------------------------------------------------------------------
+# 4. VERBOSE STREAM (Stream 4)
+# Purpose: High-level operational play-by-play intended for troubleshooting script flow.
+# Cmdlet: Write-Verbose (Enabled via -Verbose or $VerbosePreference = 'Continue')
+# ---------------------------------------------------------------------------
+Write-Verbose "Checking tire pressure"
+Write-Verbose "Checking oil level"
+Write-Verbose "Connecting OBD-II scanner..."
+Write-Verbose "Reading engine temperature sensor..."
+Write-Verbose "Engine temperature within normal range"
+Write-Host "System status check completed"
+
+# ---------------------------------------------------------------------------
+# 5. DEBUG STREAM (Stream 5)
+# Purpose: Granular, deep-level diagnostic information meant specifically for developers.
+# Cmdlet: Write-Debug (Enabled via -Debug or $DebugPreference = 'Continue')
+# ---------------------------------------------------------------------------
+Write-Host "Starting car..."
+Write-Debug "Checking engine diagnostics..."
+Write-Debug "OBD-II scanner connected. Retrieving error codes..."
+Write-Host "Check engine light is ON!"
+Write-Debug "Error Code: P0300 - Random/Multiple Cylinder Misfire Detected"
+Write-Host "Refer to the debug output for detailed diagnostics."
+
+# ---------------------------------------------------------------------------
+# 6. INFORMATION STREAM (Stream 6)
+# Purpose: Informational messages targeted at the end user; captureable and redirectable.
+# Cmdlet: Write-Information (Controlled by $InformationPreference or -InformationAction)
+# ---------------------------------------------------------------------------
+Write-Information "Starting full system diagnostics..."
+Start-Sleep -Seconds 1
+Write-Information "✔ Engine scan complete."
+Start-Sleep -Seconds 1
+Write-Information "✔ Transmission scan complete."
+Start-Sleep -Seconds 1
+Write-Information "✔ Brake system scan complete."
+Start-Sleep -Seconds 1
+Write-Information "✔ Tire pressure sensors scan complete."
+Write-Information "All systems normal. Ready for road test."
+
+# ---------------------------------------------------------------------------
+# 7. PROGRESS STREAM (Stream 7)
+# Purpose: Renders dynamic, real-time progress bars for long-running processes.
+# Cmdlet: Write-Progress (Controlled by $ProgressPreference)
+# ---------------------------------------------------------------------------
+$totalSteps = 100
+$activity = "Engine Overhaul"
+
+for ($i = 1; $i -le $totalSteps; $i++) {
+    $statusDescription = "Step $i of $totalSteps complete."
+    $percentComplete = ($i / $totalSteps) * 100
+    Write-Progress -Activity $activity -Status $statusDescription -PercentComplete $percentComplete -CurrentOperation "Processing step $i ..."
+    Start-Sleep -Milliseconds 100 # Simulate work being done
+}
+
+Write-Host "Engine overhaul complete!"
+
+<#
+=============================================================================
+EXECUTION EXAMPLES & USAGE GUIDELINES
+=============================================================================
+
+1. Default Run (Standard Output Only):
+   .\CarDiagnostics.ps1
+   - Shows: Success, Error, Warning, Progress streams, and Write-Host output.
+   - Hides: Verbose, Debug, and Information streams.
+
+2. Show Operational Details (Verbose Stream 4):
+   .\CarDiagnostics.ps1 -Verbose
+   - Unlocks high-level commentary (e.g., VERBOSE: Checking tire pressure).
+
+3. Deep Developer Debugging (Debug Stream 5):
+   .\CarDiagnostics.ps1 -Debug
+   - Unlocks granular debug details (e.g., DEBUG: Error Code P0300).
+   - Note: Will prompt for confirmation by default unless $DebugPreference = 'Continue'.
+
+4. Display User Information (Information Stream 6):
+   .\CarDiagnostics.ps1 -InformationAction Continue
+   - Unlocks structured status updates (e.g., ✔ Engine scan complete.).
+
+5. Combine All Troubleshooting Streams:
+   .\CarDiagnostics.ps1 -Verbose -Debug -InformationAction Continue
+   - Enables Streams 4, 5, and 6 simultaneously alongside all default streams.
+
+6. Suppress Visual Pop-ups and Warnings:
+   .\CarDiagnostics.ps1 -WarningAction SilentlyContinue -ProgressAction SilentlyContinue
+   - Hides Warning (Stream 3) and Progress (Stream 7); useful for automated background jobs.
+=============================================================================
+#>
