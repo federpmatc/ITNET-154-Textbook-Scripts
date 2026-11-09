@@ -83,4 +83,11 @@ Get-process Safari
 Stop-Process -Name Safari -WhatIf
 Stop-Process -Name "Safari" -Confirm
 
+get-process "Safari" -outvariable outvar
+$outvar
+$outvar = get-process "Safari" 
 
+#Kind of tricky, When Select-Objectm(-First 3), halts the upstream pipeline
+Get-ChildItem ~\ -File -OutVariable files | Select-Object -First 3 
+$files
+$files.Count
