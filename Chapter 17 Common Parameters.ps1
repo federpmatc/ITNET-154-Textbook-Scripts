@@ -1,13 +1,9 @@
 <#
-.SYNOPSIS
-    Demonstrates common parameters available in PowerShell cmdlets.
-
-.DESCRIPTION
     PowerShell common parameters are built-in parameters automatically available 
     to all standard cmdlets and advanced functions (functions decorated with [CmdletBinding()]).
     They are implemented by the PowerShell engine, not by individual cmdlet developers.
 
-.COMMON PARAMETERS
+  COMMON PARAMETERS
     - Verbose               Provides detailed operational information about what the cmdlet is doing.
     - Debug                 Displays programmer-level debugging messages.
     - ErrorAction           Determines how the cmdlet responds to a non-terminating error.
@@ -23,8 +19,6 @@
     - PipelineVariable      Stores the current pipeline object in a variable for use by downstream pipeline elements.
     - WhatIf                (Risk Mitigation) Explains what would happen if the command were executed without actually executing it.
     - Confirm               (Risk Mitigation) Prompts for confirmation before executing the action.
-
-.EXAMPLE
 #>
 
 # Example 1: Using the -Verbose common parameter
