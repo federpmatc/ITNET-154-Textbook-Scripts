@@ -128,7 +128,7 @@ EXECUTION EXAMPLES & USAGE GUIDELINES
 3. Deep Developer Debugging (Debug Stream 5):
    .\CarDiagnostics.ps1 -Debug
    - Unlocks granular debug details (e.g., DEBUG: Error Code P0300).
-   - Note: Will prompt for confirmation by default unless $DebugPreference = 'Continue'.
+   - Note:$DebugPreference = 'Inquire' and skip the switch to be prompted.
 
 4. Display User Information (Information Stream 6):
    .\CarDiagnostics.ps1 -InformationAction Continue
@@ -140,8 +140,8 @@ EXECUTION EXAMPLES & USAGE GUIDELINES
    - Enables Streams 4, 5, and 6 simultaneously alongside all default streams.
 
 6. Suppress Visual Pop-ups and Warnings:
-   .\CarDiagnostics.ps1 -WarningAction SilentlyContinue -ProgressAction SilentlyContinue
-   - Hides Warning (Stream 3) and Progress (Stream 7); useful for automated background jobs.
+   .\CarDiagnostics.ps1 -WarningAction SilentlyContinue -ProgressAction SilentlyContinue -InformationAction SilentlyContinue
+   - Hides Warning (Stream 3), Progress (Stream 7 and Information (Stream 6)
 
 Note: Quick Rule of Thumb
   - If you want to force colorful text onto the screen right now, use Write-Host.
