@@ -38,17 +38,15 @@ $VerbosePreference = 'SilentlyContinue'
 $VerbosePreference = 'Continue'
 Write-Verbose "line 15"  #write to Verbose stream
 
-
-
 #More fun with the pipeline!
-$a = get-process  | Write-Output
-$b = Get-Process | Write-Host   #nothing goes to pipeline.  Data is sent directly to information stream
+$a = get-process  | Write-Output  #Success Stream
+$b = Get-Process | Write-Host     #nothing goes to pipeline.  Data is sent directly to information stream
 
 $a
 $b   #equal to null, because nothing is added to pipeline. Output goes directly to hosting application
 
 #https://ss64.com/ps/tee-object.html
-#tee-object Send the input object(s) to two places, an input object is piped to a file or variable, and then also passed along the pipeline.
+#tee-object Send the input object(s) to two places, an input object is piped to a file or variable, and success stream.
 get-process | Out-File -filepath ~\fileA.txt -Force
 get-process | tee-object -filepath ~\fileA.txt 
 
@@ -59,6 +57,3 @@ get-process | tee-object -filepath ~\fileA.txt | out-file ~\fileB.txt
 get-process  | tee-object -variable proc | select-object processname,handles
 $proc
 
-# Redirect Errors (2) AND Warnings (3) to Success (1)
-$WarningPreference = 'Continue'
-Write-Warning "Caution!" 2>&1 3>&1
